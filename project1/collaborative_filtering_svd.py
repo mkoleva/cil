@@ -38,36 +38,48 @@ def parseInputMatrix(path='data/data_train.csv'):
 
 
 def computeAverages(matrix):
+    """ Calculates mean rating for a film across users and mean rating of user across films.
+
+    TODO: Do values need to be integers?
+    """
     numUsers, numFilms = matrix.shape
 
-    averages_of_movies = np.zeros(numFilms)
-    averages_of_users = np.zeros(numUsers)
-    for j in range(0, numFilms):
-        sum = 0
-        count = 0
-        for i in range(0, numUsers):
-            if matrix[i][j] != 0:
-                count += 1
-                sum += matrix[i][j]
+    # Finds the mean across every column, ignoring 0s and then sets nan to 0
+    averages_of_movies = np.apply_along_axis(lambda v: np.median(v[np.nonzero(v)]), 0, matrix)
+    averages_of_movies[np.isnan(averages_of_movies)]=0.
 
-        if count == 0:
-            averages_of_movies[j] = 0
-        else:
-            averages_of_movies[j] = sum / count
+    # Finds the mean across every row, ignoring 0s and then sets nan to 0
+    averages_of_users = np.apply_along_axis(lambda v: np.median(v[np.nonzero(v)]), 1, matrix)
+    averages_of_users[np.isnan(averages_of_users)]=0.
+
+    # averages_of_movies = np.zeros(numFilms)
+    # averages_of_users = np.zeros(numUsers)
+    # for j in range(0, numFilms):
+    #     sum = 0
+    #     count = 0
+    #     for i in range(0, numUsers):
+    #         if matrix[i][j] != 0:
+    #             count += 1
+    #             sum += matrix[i][j]
+
+    #     if count == 0:
+    #         averages_of_movies[j] = 0
+    #     else:
+    #         averages_of_movies[j] = sum / count
 
 
-    for i in range(0, numUsers):
-        sum = 0
-        count = 0
-        for j in range(0, numFilms):
-            if matrix[i][j] != 0:
-                count += 1
-                sum += matrix[i][j]
+    # for i in range(0, numUsers):
+    #     sum = 0
+    #     count = 0
+    #     for j in range(0, numFilms):
+    #         if matrix[i][j] != 0:
+    #             count += 1
+    #             sum += matrix[i][j]
 
-        if count == 0:
-            averages_of_users[i] = 0
-        else:
-            averages_of_users[i] = sum / count
+    #     if count == 0:
+    #         averages_of_users[i] = 0
+    #     else:
+    #         averages_of_users[i] = sum / count
 
     return averages_of_movies, averages_of_users
 
@@ -94,9 +106,6 @@ def code():
     # impute a matrix...
     matrix_imputed = matrix
 
-
-# ans=np.apply_along_axis(lambda v: np.median(v[np.nonzero(v)]), 0, matrix)
-# ans[np.isnan(ans)]=0.; ans
 
     print "Compute averages for imputation...\n"
 
