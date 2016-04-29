@@ -17,7 +17,7 @@ def calculate_error(X_true, X_pred):
 
 def code():
 
-    input = np.genfromtxt('data_train.csv', delimiter=',', dtype=None)
+    input = np.genfromtxt('data/data_train.csv', delimiter=',', dtype=None)
 
     amount_of_validation = 0.01
 
@@ -146,9 +146,9 @@ def code():
     U_new = np.dot(U[:, 0:best_K], D_new)
     V_new = np.dot(np.transpose(V)[:, 0:best_K], D_new)
 
-    sample_submission = np.genfromtxt('sampleSubmission_2.csv', delimiter=',', dtype=None)
+    sample_submission = np.genfromtxt('data/sampleSubmission.csv', delimiter=',', dtype=None)
 
-    f = open('my_prediction.csv', 'w')
+    f = open('data/my_prediction.csv', 'w')
 
     f.write('%s\n' % "Id,Prediction")
 
