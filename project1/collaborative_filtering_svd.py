@@ -15,17 +15,15 @@ def calculate_error(X_true, X_pred):
     return np.sqrt(sum / obs)
 
 
-def code():
-
-    input = np.genfromtxt('data/data_train.csv', delimiter=',', dtype=None)
-
-    amount_of_validation = 0.01
+def parseInputMatrix(path='data/data_train.csv'):
+    """ Reads the data_trains.csv and builds a matrix of users, films and ratings """
+    input = np.genfromtxt(path, delimiter=',', dtype=None)
 
     # row is user, movie is column
     matrix = np.zeros((10000, 1000))
 
     user, movie, rating = [], [], []
-    for i in range(1, np.shape(input)[0]):
+    for i in xrange(1, np.shape(input)[0]):
         entry = input[i][0].split("_")
         row = int(entry[0][1:]) - 1
         column = int(entry[1][1:]) - 1
@@ -35,6 +33,17 @@ def code():
         rating.append(int(input[i][1]))
 
     training_data = zip(user, movie, rating)
+    return training_data
+
+
+
+def code():
+
+    amount_of_validation = 0.01
+    # row is user, movie is column
+    matrix = np.zeros((10000, 1000))
+
+    training_data = parseInputMatrix()
     np.random.shuffle(training_data)
 
     counter = 0
