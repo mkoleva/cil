@@ -17,23 +17,59 @@ def calculate_error(X_true, X_pred):
 
 def parseInputMatrix(path='data/data_train.csv'):
     """ Reads the data_trains.csv and builds a matrix of users, films and ratings """
-    input = np.genfromtxt(path, delimiter=',', dtype=None)
+    input = np.genfromtxt(path, delimiter=',', dtype=None, skip_header=1)
 
     # row is user, movie is column
     matrix = np.zeros((10000, 1000))
 
-    user, movie, rating = [], [], []
-    for i in xrange(1, np.shape(input)[0]):
-        entry = input[i][0].split("_")
-        row = int(entry[0][1:]) - 1
-        column = int(entry[1][1:]) - 1
+    user, movie, ratings = [], [], []
+    for ind, (entry, rating) in enumerate(input):
+        # iterate over each row and parse rRowId_cColID, rating
+        r,c = entry.split("_")
+        row = int(r[1:]) - 1
+        column = int(c[1:]) - 1
 
         user.append(row)
         movie.append(column)
-        rating.append(int(input[i][1]))
+        ratings.append(int(rating))
 
-    training_data = zip(user, movie, rating)
+    training_data = zip(user, movie, ratings)
     return training_data
+
+
+def computeAverages(matrix):
+    numUsers, numFilms = matrix.shape
+
+    averages_of_movies = np.zeros(numFilms)
+    averages_of_users = np.zeros(numUsers)
+    for j in range(0, numFilms):
+        sum = 0
+        count = 0
+        for i in range(0, numUsers):
+            if matrix[i][j] != 0:
+                count += 1
+                sum += matrix[i][j]
+
+        if count == 0:
+            averages_of_movies[j] = 0
+        else:
+            averages_of_movies[j] = sum / count
+
+
+    for i in range(0, numUsers):
+        sum = 0
+        count = 0
+        for j in range(0, numFilms):
+            if matrix[i][j] != 0:
+                count += 1
+                sum += matrix[i][j]
+
+        if count == 0:
+            averages_of_users[i] = 0
+        else:
+            averages_of_users[i] = sum / count
+
+    return averages_of_movies, averages_of_users
 
 
 
@@ -47,9 +83,9 @@ def code():
     np.random.shuffle(training_data)
 
     counter = 0
-    for (i, j, r) in training_data:
+    for (u, m, rating) in training_data:
         if counter <= (1 - amount_of_validation) * len(training_data):
-            matrix[i][j] = r
+            matrix[u][m] = rating
         counter += 1
 
     averages_of_movies = np.zeros(1000)
@@ -58,33 +94,13 @@ def code():
     # impute a matrix...
     matrix_imputed = matrix
 
+
+# ans=np.apply_along_axis(lambda v: np.median(v[np.nonzero(v)]), 0, matrix)
+# ans[np.isnan(ans)]=0.; ans
+
     print "Compute averages for imputation...\n"
-    for j in range(0, 1000):
-        sum = 0
-        count = 0
-        for i in range(0, 10000):
-            if matrix[i][j] != 0:
-                count += 1
-                sum += matrix[i][j]
 
-        if count == 0:
-            averages_of_movies[j] = 0
-        else:
-            averages_of_movies[j] = sum / count
-
-    for i in range(0, 10000):
-        sum = 0
-        count = 0
-        for j in range(0, 1000):
-            if matrix[i][j] != 0:
-                count += 1
-                sum += matrix[i][j]
-
-        if count == 0:
-            averages_of_users[i] = 0
-        else:
-            averages_of_users[i] = sum / count
-
+    averages_of_movies, averages_of_users = computeAverages(matrix)
     print "Finished computing averages for imputation...\n"
 
     print "Started imputing matrix...\n"
@@ -134,7 +150,7 @@ def code():
 
             error_on_validation += pow(r - np.dot(U_new[i, :], np.transpose(V_new[j, :])), 2)
 
-        rmse_error = np.sqrt(error_on_validation / (amount_of_validation * len(user)))
+        rmse_error = np.sqrt(error_on_validation / (amount_of_validation * len(training_data)))
 
         print K, rmse_error
 
