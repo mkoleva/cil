@@ -16,11 +16,8 @@ def calculate_error(X_true, X_pred):
 
 
 def parseInputMatrix(path='data/data_train.csv'):
-    """ Reads the data_trains.csv and builds a matrix of users, films and ratings """
+    """ Reads the data_trains.csv and builds a lists of users, films and ratings """
     input = np.genfromtxt(path, delimiter=',', dtype=None, skip_header=1)
-
-    # row is user, movie is column
-    matrix = np.zeros((10000, 1000))
 
     user, movie, ratings = [], [], []
     for ind, (entry, rating) in enumerate(input):
@@ -51,35 +48,6 @@ def computeAverages(matrix):
     # Finds the mean across every row, ignoring 0s and then sets nan to 0
     averages_of_users = np.apply_along_axis(lambda v: np.median(v[np.nonzero(v)]), 1, matrix)
     averages_of_users[np.isnan(averages_of_users)]=0.
-
-    # averages_of_movies = np.zeros(numFilms)
-    # averages_of_users = np.zeros(numUsers)
-    # for j in range(0, numFilms):
-    #     sum = 0
-    #     count = 0
-    #     for i in range(0, numUsers):
-    #         if matrix[i][j] != 0:
-    #             count += 1
-    #             sum += matrix[i][j]
-
-    #     if count == 0:
-    #         averages_of_movies[j] = 0
-    #     else:
-    #         averages_of_movies[j] = sum / count
-
-
-    # for i in range(0, numUsers):
-    #     sum = 0
-    #     count = 0
-    #     for j in range(0, numFilms):
-    #         if matrix[i][j] != 0:
-    #             count += 1
-    #             sum += matrix[i][j]
-
-    #     if count == 0:
-    #         averages_of_users[i] = 0
-    #     else:
-    #         averages_of_users[i] = sum / count
 
     return averages_of_movies, averages_of_users
 
@@ -142,7 +110,7 @@ def code():
     for K in range(6, 20):
         D_new = np.zeros((K, K))
 
-        for i in range(0, np.shape(D_new)[0]):
+        for i in range(0, K):
             D_new[i][i] = np.sqrt(D[i])
 
         U_new = np.dot(U[:, 0:K], D_new)
