@@ -1,7 +1,12 @@
 import numpy as np
-from sklearn.feature_selection import SelectKBest
-from sklearn.feature_selection import f_classif
 import matplotlib.pyplot as plt
+
+from general_functions import *
+
+rating_matrix = []
+
+# SVD output
+U, D, V = [], [], []
 
 def calculate_error(X_true, X_pred):
     sum = 0
@@ -15,69 +20,14 @@ def calculate_error(X_true, X_pred):
     return np.sqrt(sum / obs)
 
 
-def parseInputMatrix(path='data/data_train.csv'):
-    """ Reads the data_trains.csv and builds a lists of users, films and ratings """
-    input = np.genfromtxt(path, delimiter=',', dtype=None, skip_header=1)
-
-    user, movie, ratings = [], [], []
-    for ind, (entry, rating) in enumerate(input):
-        # iterate over each row and parse rRowId_cColID, rating
-        r,c = entry.split("_")
-        row = int(r[1:]) - 1
-        column = int(c[1:]) - 1
-
-        user.append(row)
-        movie.append(column)
-        ratings.append(int(rating))
-
-    training_data = zip(user, movie, ratings)
-    return training_data
-
-
-def computeAverages(matrix):
-    """ Calculates mean rating for a film across users and mean rating of user across films.
-
-    TODO: Do values need to be integers?
-    """
-    numUsers, numFilms = matrix.shape
-
-    # Finds the mean across every column, ignoring 0s and then sets nan to 0
-    averages_of_movies = np.apply_along_axis(lambda v: np.median(v[np.nonzero(v)]), 0, matrix)
-    averages_of_movies[np.isnan(averages_of_movies)]=0.
-
-    # Finds the mean across every row, ignoring 0s and then sets nan to 0
-    averages_of_users = np.apply_along_axis(lambda v: np.median(v[np.nonzero(v)]), 1, matrix)
-    averages_of_users[np.isnan(averages_of_users)]=0.
-
-    return averages_of_movies, averages_of_users
-
-
-
-def code():
-
-    amount_of_validation = 0.01
-    # row is user, movie is column
-    matrix = np.zeros((10000, 1000))
-
-    training_data = parseInputMatrix()
-    np.random.shuffle(training_data)
-
-    counter = 0
-    for (u, m, rating) in training_data:
-        if counter <= (1 - amount_of_validation) * len(training_data):
-            matrix[u][m] = rating
-        counter += 1
-
-    averages_of_movies = np.zeros(1000)
-    averages_of_users = np.zeros(10000)
-
+def impute_rating_matrix():
     # impute a matrix...
-    matrix_imputed = matrix
+    matrix_imputed = rating_matrix
 
 
     print "Compute averages for imputation...\n"
 
-    averages_of_movies, averages_of_users = computeAverages(matrix)
+    averages_of_movies, averages_of_users = computeAverages(rating_matrix)
     print "Finished computing averages for imputation...\n"
 
     print "Started imputing matrix...\n"
@@ -94,19 +44,12 @@ def code():
 
     print "finished imputing matrix...\n"
 
-    print "start SVD...\n"
+    return matrix_imputed
 
-    U, D, V = np.linalg.svd(matrix_imputed, full_matrices=False)
-
-    plt.semilogy(D)
-    plt.show()
-
-    print "finished SVD...\n"
-
+def do_validation(validationSubset):
     best_K = 1
     rmse_min = 10
 
-    errors_list = []
     for K in range(6, 20):
         D_new = np.zeros((K, K))
 
@@ -118,28 +61,43 @@ def code():
 
         counter = 0
         error_on_validation = 0
-        for (i, j, r) in training_data:
+        for (i, j, r) in validationSubset:
 
             counter += 1
 
-            if counter <= (1 - amount_of_validation) * len(training_data):
-                continue
-
             error_on_validation += pow(r - np.dot(U_new[i, :], np.transpose(V_new[j, :])), 2)
 
-        rmse_error = np.sqrt(error_on_validation / (amount_of_validation * len(training_data)))
+        rmse_error = np.sqrt(error_on_validation / np.shape(validationSubset)[0])
 
         print K, rmse_error
-
-        errors_list.append(rmse_error)
 
         if rmse_error < rmse_min:
             rmse_min = rmse_error
             best_K = K
 
-    plt.plot(errors_list)
-    plt.show()
+    print "best K = ", best_K
 
+    # save for regression
+    D_new = np.zeros((best_K, best_K))
+
+    for i in range(0, best_K):
+        D_new[i][i] = np.sqrt(D[i])
+
+    U_new = np.dot(U[:, 0:best_K], D_new)
+    V_new = np.dot(np.transpose(V)[:, 0:best_K], D_new)
+
+    feature_vector_for_regression = []
+
+    for (i, j, r) in validationSubset:
+        prediction = np.dot(U_new[i, :], np.transpose(V_new[j, :]))
+        feature_vector_for_regression.append([prediction, r])
+
+    np.save('data/svd/feature_vector_svd', feature_vector_for_regression)
+
+
+    return best_K
+
+def do_prediction(best_K=12):
     D_new = np.zeros((best_K, best_K))
 
     for i in range(0, np.shape(D_new)[0]):
@@ -148,9 +106,12 @@ def code():
     U_new = np.dot(U[:, 0:best_K], D_new)
     V_new = np.dot(np.transpose(V)[:, 0:best_K], D_new)
 
+    np.save('data/svd/nP_matrix_svd', U_new)
+    np.save('data/svd/nQ_matrix_svd', V_new)
+
     sample_submission = np.genfromtxt('data/sampleSubmission.csv', delimiter=',', dtype=None)
 
-    f = open('data/my_prediction.csv', 'w')
+    f = open('data/svd/my_prediction_svd.csv', 'w')
 
     f.write('%s\n' % "Id,Prediction")
 
@@ -162,6 +123,43 @@ def code():
         f.write('r%d_c%d,%f\n' % (row, column, np.dot(U_new[row - 1, :], np.transpose(V_new[column - 1, :]))))
 
     f.close()
+
+def code():
+
+    global rating_matrix, U, D, V
+
+    # row is user, movie is column
+    rating_matrix = np.zeros((10000, 1000))
+
+    training_data = parseInputMatrix()
+    """ Partitioning the training data into training and validation"""
+
+    indices_for_validation = generate_validation_set(training_data, indices_for_validation_set_already_chosen=True)
+    print indices_for_validation[:10]
+
+    validationSubset = np.take(training_data, indices_for_validation, axis=0)
+    trainingSubset = np.delete(training_data, indices_for_validation, axis=0)
+
+
+    counter = 0
+    for (u, m, rating) in trainingSubset:
+        rating_matrix[u][m] = rating
+
+    averages_of_movies = np.zeros(1000)
+    averages_of_users = np.zeros(10000)
+
+
+    matrix_imputed = impute_rating_matrix()
+
+    print "start SVD...\n"
+
+    U, D, V = np.linalg.svd(matrix_imputed, full_matrices=False)
+
+    print "finished SVD...\n"
+
+    best_K = do_validation(validationSubset)
+
+    do_prediction(best_K)
 
 if __name__ == '__main__':
     code()
