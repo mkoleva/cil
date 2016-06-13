@@ -3,6 +3,8 @@ __author__ = 'karimlabib'
 import numpy as np
 
 from general_functions import *
+from sklearn.metrics.pairwise import pairwise_distances
+
 
 numRatings = 0
 valSetSize = 0
@@ -23,8 +25,9 @@ def get_intersection(u1, u2):
 
 def pearson_distance(u1, u2):
     intersection_list = get_intersection(u1, u2)
+    interesectedFilms = np.shape(intersection_list)[0]
 
-    if np.shape(intersection_list)[0] == 0:
+    if interesectedFilms == 0:
         return 0
 
     average_of_user_1, average_of_user_2 = 0, 0
@@ -32,8 +35,8 @@ def pearson_distance(u1, u2):
     u1_ratings_in_intersection = np.take(rating_matrix[u1], intersection_list)
     u2_ratings_in_intersection = np.take(rating_matrix[u2], intersection_list)
 
-    average_of_user_1 = np.sum(u1_ratings_in_intersection) / np.shape(intersection_list)[0]
-    average_of_user_2 = np.sum(u2_ratings_in_intersection) / np.shape(intersection_list)[0]
+    average_of_user_1 = np.mean(u1_ratings_in_intersection)
+    average_of_user_2 = np.mean(u2_ratings_in_intersection)
 
     normalized_user_1 = np.subtract(u1_ratings_in_intersection, average_of_user_1)
     normalized_user_2 = np.subtract(u2_ratings_in_intersection, average_of_user_2)
@@ -59,9 +62,10 @@ def get_indices_of_nearest_neighbors(weight_array, k):
 def predict_rating(user, movie, k=20):
 
     indices_of_nearest_neigbours = get_indices_of_nearest_neighbors(weight_matrix[user, :], k)
+    nearestNeighbours = np.shape(indices_of_nearest_neigbours)[0]
 
     numerator, denominator = 0.0, 0.0
-    for i in range(0, np.shape(indices_of_nearest_neigbours)[0]):
+    for i in xrange(nearestNeighbours):
         current_neighbour = indices_of_nearest_neigbours[i]
 
         if rating_matrix[current_neighbour][movie] != 0:
@@ -83,12 +87,20 @@ def predict_rating(user, movie, k=20):
     return predicted_rating
 
 def compute_weight_matrix():
-    for i in range(0, np.shape(rating_matrix)[0]):
-        print i
+    print "total ratings to iterate: ", np.shape(rating_matrix)[0]
+    # pool = multiprocessing.Pool(4)
+    # out1, out2, out3 = zip(*pool.map(calc_stuff, range(0, 10 * offset, offset)))
+    from sklearn.metrics.pairwise import pairwise_distances
+    weight_matrix = pairwise_distances(rating_matrix, metric='correlation', n_jobs=-1) #user similarity
+    weight_matrix = np.nan_to_num(weight_matrix)
 
-        for j in range(i + 1, np.shape(rating_matrix)[0]):
 
-            weight_matrix[i][j] = weight_matrix[j][i] = pearson_distance(i, j)
+    # for i in range(0, np.shape(rating_matrix)[0]):
+    #     print i
+
+    #     for j in range(i + 1, np.shape(rating_matrix)[0]):
+
+    #         weight_matrix[i][j] = weight_matrix[j][i] = pearson_distance(i, j)
 
     np.save('data/knn/weight_matrix', weight_matrix)
 
@@ -124,6 +136,7 @@ def do_validation(validationSubset):
         error = 0
         for (u, m, rating) in validationSubset:
             predicted_rating = predict_rating(u, m, k)
+            # print predicted_rating
 
             error += pow((predicted_rating - rating), 2)
 
