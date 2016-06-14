@@ -1,6 +1,8 @@
 __author__ = 'karimlabib'
 
 import numpy as np
+from sklearn.metrics.pairwise import pairwise_distances
+
 
 def generateRandomSubset(len, upTo):
     allIndeces = np.arange(upTo)
@@ -9,7 +11,7 @@ def generateRandomSubset(len, upTo):
 
 def generate_validation_set(trainingSubset, indices_for_validation_set_already_chosen=False):
 
-    validationSetPrecentage = 0.001
+    validationSetPrecentage = 0.05
 
     numRatings = len(trainingSubset)
     valSetSize = int(numRatings*validationSetPrecentage)
@@ -57,3 +59,14 @@ def computeAverages(matrix):
     averages_of_users[np.isnan(averages_of_users)] = 0.
 
     return averages_of_movies, averages_of_users
+
+
+def compute_weight_matrix(rating_matrix, metric):
+    """ Computes a pairwise similarity matrix for the samples in the matrix based on the metric f-n provided"""
+    
+    dist_matrix = pairwise_distances(rating_matrix, metric=metric, n_jobs=-1) #user similarity
+    dist_matrix = np.nan_to_num(dist_matrix)
+    print "Some distances ", dist_matrix[0]
+
+    weight_matrix = 1.0-dist_matrix  # convert to weight matrix from dist matrix
+    return weight_matrix

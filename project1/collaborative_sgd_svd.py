@@ -47,7 +47,7 @@ def generateRandomSubsetForCV(cv, dataLen):
         yield allIndeces[start:end]
 
 
-def matrix_factorisation(training_data, validation_data, epochs=30, learning_rate=0.001, lam=0.05):
+def matrix_factorisation(training_data, validation_data, epochs=50, learning_rate=0.001, lam=0.05):
     global P, Q, B_item, B_user
 
     Q = Q.T

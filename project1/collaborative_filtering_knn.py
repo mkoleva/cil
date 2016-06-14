@@ -4,6 +4,8 @@ import numpy as np
 
 from general_functions import *
 from sklearn.metrics.pairwise import pairwise_distances
+from scipy.spatial.distance import correlation as corr_dist
+from scipy.spatial.distance import pdist, cdist
 
 
 numRatings = 0
@@ -13,8 +15,19 @@ amount_of_validation = 0.01
 weight_matrix = np.zeros((10000, 10000))
 averages_of_movies, averages_of_users = [], []
 rating_matrix = np.zeros((10000, 1000))
+centered_rating_matrix = np.zeros((10000, 1000))
+
 
 movies_indices_rated_by_user = [set() for _ in xrange(10000)]
+
+def memodict(f):
+    """ Memoization decorator for a function taking a single argument """
+    class memodict(dict):
+        def __missing__(self, key):
+            ret = self[key] = f(key)
+            return ret 
+    return memodict().__getitem__
+
 
 def get_intersection(u1, u2):
     """take two vectors of ratings with length equal to total number of movies and return a list of
@@ -54,55 +67,39 @@ def pearson_distance(u1, u2):
 
     return numerator / denominator
 
+@memodict
+def get_indices_of_nearest_neighbors(params):
+    """Get the closest neighbours of a user
 
-def get_indices_of_nearest_neighbors(weight_array, k):
-    return (-weight_array).argsort()[:k]
+    Memoized so that it is not recalculated again and again for the same user
+    """
+
+    user, k = params
+    return (-weight_matrix[user, :]).argsort()[:k]
 
 
 def predict_rating(user, movie, k=20):
 
-    indices_of_nearest_neigbours = get_indices_of_nearest_neighbors(weight_matrix[user, :], k)
-    nearestNeighbours = np.shape(indices_of_nearest_neigbours)[0]
+    indices_of_nearest_neigbours = get_indices_of_nearest_neighbors((user, k))
 
     numerator, denominator = 0.0, 0.0
-    for i in xrange(nearestNeighbours):
-        current_neighbour = indices_of_nearest_neigbours[i]
-
-        if rating_matrix[current_neighbour][movie] != 0:
+    for current_neighbour in indices_of_nearest_neigbours:
+        if rating_matrix[current_neighbour, movie] != 0:
             numerator += weight_matrix[user, current_neighbour] \
                          * (rating_matrix[current_neighbour, movie] - averages_of_users[current_neighbour])
 
         denominator += weight_matrix[user, current_neighbour]
 
-    """
-    rating_nearest_neigbours_normalized = np.subtract(np.take(rating_matrix[:,movie], indices_of_nearest_neigbours), np.take(averages_of_users, indices_of_nearest_neigbours))
-
-    numerator = sum(np.multiply(np.take(weight_matrix[user, :], indices_of_nearest_neigbours), rating_nearest_neigbours_normalized))
-
-    denominator = sum(np.take(weight_matrix[user, :], indices_of_nearest_neigbours))
-
-    """
     predicted_rating = averages_of_users[user] + numerator / denominator
 
     return predicted_rating
 
-def compute_weight_matrix():
-    print "total ratings to iterate: ", np.shape(rating_matrix)[0]
-    # pool = multiprocessing.Pool(4)
-    # out1, out2, out3 = zip(*pool.map(calc_stuff, range(0, 10 * offset, offset)))
-    from sklearn.metrics.pairwise import pairwise_distances
-    weight_matrix = pairwise_distances(rating_matrix, metric='correlation', n_jobs=-1) #user similarity
-    weight_matrix = np.nan_to_num(weight_matrix)
+def nan_dist_users(u, v):
+    """ Ignore missing values and then calculate dist"""
 
+    mask = np.logical_and(u!=0, v!=0)
+    return cdist([u[mask]], [v[mask]], 'cosine')
 
-    # for i in range(0, np.shape(rating_matrix)[0]):
-    #     print i
-
-    #     for j in range(i + 1, np.shape(rating_matrix)[0]):
-
-    #         weight_matrix[i][j] = weight_matrix[j][i] = pearson_distance(i, j)
-
-    np.save('data/knn/weight_matrix', weight_matrix)
 
 def do_prediction(best_k):
     sample_submission = np.genfromtxt('data/sampleSubmission.csv', delimiter=',', dtype=None)
@@ -132,7 +129,7 @@ def do_validation(validationSubset):
 
     best_error = 10
     best_k = 1
-    for k in range(90, 150):
+    for k in range(50, 70, 3):
         error = 0
         for (u, m, rating) in validationSubset:
             predicted_rating = predict_rating(u, m, k)
@@ -163,7 +160,8 @@ def do_validation(validationSubset):
 
 def code():
 
-    weight_matrix_and_validation_indices_computed = True
+    weight_matrix_computed = True
+    indices_for_validation_computed = True
 
     global weight_matrix, averages_of_users, averages_of_movies, valSetSize, numRatings
 
@@ -171,7 +169,7 @@ def code():
 
     """ Partitioning the training data into training and validation"""
 
-    indices_for_validation = generate_validation_set(trainingSubset, indices_for_validation_set_already_chosen=weight_matrix_and_validation_indices_computed)
+    indices_for_validation = generate_validation_set(trainingSubset, indices_for_validation_set_already_chosen=indices_for_validation_computed)
     print indices_for_validation[:10]
     validationSubset = np.take(trainingSubset, indices_for_validation, axis=0)
     trainingSubset = np.delete(trainingSubset, indices_for_validation, axis=0)
@@ -187,11 +185,18 @@ def code():
 
     averages_of_movies, averages_of_users = computeAverages(rating_matrix)
 
-    if weight_matrix_and_validation_indices_computed == True:
+    print averages_of_users.shape
+    # remove means for every user
+    centered_rating_matrix = rating_matrix - averages_of_users[:, np.newaxis]
+    # missing values will go from 0 to negative, convert back to 0
+    centered_rating_matrix = centered_rating_matrix.clip(min=0)  
+
+    if weight_matrix_computed == True:
         weight_matrix = np.load('data/knn/weight_matrix.npy')
     else:
-        compute_weight_matrix()
-
+        # pearson == cosine on centered matrix
+        weight_matrix = compute_weight_matrix(rating_matrix=centered_rating_matrix, metric=nan_dist_users)
+        np.save('data/knn/weight_matrix', weight_matrix)
 
     best_k = do_validation(validationSubset)
 

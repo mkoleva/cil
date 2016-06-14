@@ -19,12 +19,14 @@ def train():
         X.append([feature_vector_svd[i][0], feature_vector_sgd[i][0], feature_vector_knn[i][0],  feature_vector_knn_items[i][0]])
         y.append(feature_vector_sgd[i][1])
 
-    regressor = linear_model.LinearRegression()
+    regressor = linear_model.LassoCV()
     regressor.fit(X, y)
 
     scores = cross_validation.cross_val_score(regressor, X, y, scoring="mean_squared_error", cv=10)
 
     print scores.mean()
+    print scores
+    print regressor.coef_
 
     return regressor
 
@@ -67,7 +69,7 @@ def predict(regressor):
 
 def code():
     regressor = train()
-    predict(regressor)
+    # predict(regressor)
 
 if __name__ == '__main__':
     code()
