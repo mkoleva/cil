@@ -8,7 +8,6 @@ from sklearn.grid_search import GridSearchCV
 
 numRatings = 0
 valSetSize = 0
-amount_of_validation = 0.01
 
 machine = BernoulliRBM
 trainingMatrix = []
@@ -23,7 +22,7 @@ def compute_visible_input_probability():
         if user % 100 == 0:
             print user
 
-        p_hat =  machine.transform(trainingMatrix[user])
+        p_hat =  machine.transform(trainingMatrix[user].reshape(1, -1))
 
         tmp = np.dot(machine.components_.T, p_hat.T)
         tmp = np.array([x+y for x,y in zip(tmp, machine.intercept_visible_)])
@@ -123,7 +122,7 @@ def code():
     for (u, m, rating) in trainingSubset:
         trainingMatrix[u][get_index_of_movie_rating_in_visible_vector(m, rating)] = 1
 
-    machine = BernoulliRBM(random_state=0, verbose=True, n_components=20, n_iter=14)
+    machine = BernoulliRBM(random_state=0, verbose=True, n_components=80, n_iter=14)
     machine.fit(trainingMatrix)
 
     compute_visible_input_probability()

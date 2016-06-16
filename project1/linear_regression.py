@@ -11,19 +11,25 @@ def train():
     feature_vector_sgd = np.load('data/sgd/feature_vector_sgd.npy')
     feature_vector_knn = np.load('data/knn/feature_vector_knn.npy')
     feature_vector_rbm = np.load('data/rbm/feature_vector_rbm.npy')
-    #feature_vector_knn_items = np.load('data/knn/feature_vector_knn_items.npy')
+    # feature_vector_knn_items = np.load('data/knn/feature_vector_knn_items.npy')
 
 
     X, y = [], []
 
-    for i in range(0, np.shape(feature_vector_knn)[0]):
-        X.append([feature_vector_svd[i][0], feature_vector_sgd[i][0], feature_vector_knn[i][0],  feature_vector_rbm[i][0]])
+    for i in range(0, np.shape(feature_vector_svd)[0]):
+        X.append([
+            feature_vector_svd[i][0], feature_vector_sgd[i][0], 
+            feature_vector_knn[i][0],
+            # feature_vector_knn[i][0], feature_vector_knn_items[i][0],
+            feature_vector_rbm[i][0],
+            ])
         y.append(feature_vector_sgd[i][1])
 
-    regressor = linear_model.LassoCV()
+    regressor = linear_model.LinearRegression()
     regressor.fit(X, y)
 
-    scores = cross_validation.cross_val_score(regressor, X, y, scoring="mean_squared_error", cv=10)
+    scores = cross_validation.cross_val_score(
+        regressor, X, y, scoring="mean_squared_error", cv=10)
 
     print scores.mean()
     print scores
@@ -37,7 +43,7 @@ def predict(regressor):
     sgd = np.genfromtxt('data/sgd/my_prediction_sgd.csv', delimiter=',', dtype=None)
     knn = np.genfromtxt('data/knn/my_prediction_knn.csv', delimiter=',', dtype=None)
     rbm = np.genfromtxt('data/rbm/my_prediction_rbm.csv', delimiter=',', dtype=None)
-    #knn_items = np.genfromtxt('data/knn/my_prediction_knn_items.csv', delimiter=',', dtype=None)
+    knn_items = np.genfromtxt('data/knn/my_prediction_knn_items.csv', delimiter=',', dtype=None)
 
 
     f = open('data/my_prediction_linear_regression.csv', 'w')
@@ -47,7 +53,7 @@ def predict(regressor):
     print "prediction"
 
     for i in range(1, np.shape(sgd)[0]):
-        if i % 1000 == 0:
+        if i % 10000 == 0:
             print i
 
         entry = sgd[i][0].split("_")
@@ -58,10 +64,14 @@ def predict(regressor):
         sgd_rating = float(sgd[i][1])
         knn_rating = float(knn[i][1])
         rbm_rating = float(rbm[i][1])
-        #knn_items_rating = float(knn_items[i][1])
+        # knn_items_rating = float(knn_items[i][1])
 
 
-        prediction = regressor.predict(np.array([[svd_rating, sgd_rating, knn_rating, rbm_rating]]))
+        prediction = regressor.predict(np.array([[
+            svd_rating, sgd_rating, knn_rating,
+            # knn_items_rating,
+            rbm_rating,
+        ]]))
 
         if prediction > 5:
             prediction = 5
