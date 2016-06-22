@@ -43,28 +43,56 @@ In Section \ref{sec:models} we describe the idea and the implementation of our s
 
 \section{Models and Methods}
 \label{sec:models}
-
+All work is done on the Netflix dataset provided for the project. The data is a collection of \textit{(user, film, rating)} tuples. For training, we have 1176953 ratings available. The online evaluation on Kaggle is performed on another 1176953 ratings. We were able to see the prediction accuracy on 50\% of that online dataset and our goal was to improve that as it is believed to be very similar to the other 50\% of the data.
 \subsection{Data Model}
 
-Matrix with bla users and bla films and some number of ratings. Clearly most of the films are not rated by all (or most) users, thus it is a very sparse matrix.
+The provided dataset can be most naturally seen as an $NxM$ matrix, with $N$ being the 10000 unique users, and $M$ - 1000 films. If every user had rated every film, the matrix would have more than $10^7$ entries. However, in this realistic scenario, this is not the case and our matrix is quite sparse. From here stems the difficulty of the problem - we attempt to predict more than a million ratings based on very incomplete dataset. 
 
-\subsubsection*{Latent factor models} Something about how it is based on finding an underlying model of latent user and film features which explain the rating.
+There are two main views which define the methods of tackling this problem.
 
-\subsubsection*{Neighbourhood based} Something how it is based on finding similar users or similar films
+\subsubsection*{\textbf{Latent factor models}} This approach tries to explain the ratings as influenced by a set of unknown factors. Both users and items can be characterised by those latent factors and they are represented as feature vectors in this latent feature space. The rating of a film is approximate by the dot product between the user and the film feature vectors.
+
+The different methods then aim to infer the underlying film and user feature vectors from the available ratings, most successfully through matrix factorisation techniques and approximations. We discuss SVD, SGD SVD and RBM. 
+\\
+
+\subsubsection*{\textbf{Neighbourhood-based models}} Another approach to the collaborative filtering problem is to view the ratings as features of either the users (user-based) or the films (item-based). In the former case, a user A is represented as a sparse feature vector of their ratings and we would base our prediction on other users who have rated those films similarly. In the latter scenario, we would use the similarity between the new film and the films already rated by A to estimate the new rating. Each film is a feature vector of all users' ratings. We review an implementation of both in the next subsection.
 
 \subsection{Algorithms}
 We investigated three algorithms which concentrate on solving the latent-factor model problem and two which work on the neighbourhood model:
-SVD: 
 
-SGD for SVD:
+\subsubsection*{\textbf{SVD}} Given the latent factor model described above, the rating matrix is produced by the multiplication of the users matrix and films matrix which are all on the same feature space. The most natural way to infer the users and films representation is using a matrix factorisation approach so SVD comes directly to mind[some refs here]. The main issue is that SVD works on full matrices and as mentioned above, this is not the case. Hence, we need to impute the missing values before we can proceed. This introduces noise and leads to sup-optimal results. We hope to minimize the noise and the overfitting by looking for a low-rank ($k$) approximation of the rating matrix. 
+\\
 
+We experimented with imputation strategies, different number of latent features and values for k using a local validation set. We concluded that the best results were accomplished using XX features and Equation \ref{eq:imputation} for imputation:
 
-RBM
+\begin{equation}
+R_ij = 0.5*AvgUser[i] + 0.5*AvgFilm[j]
+\label{eq:imputation}
+\end{equation}
 
+A missing rating of user $i$ for film $j$ is calculated as a linear combination of the average rating given by user $i$ and the average rating received by film $j$ from all other users. If any of those values is missing due to a film with no ratings or user with no rated films, the other values is used.
 
-user-based kNN: Find the top k most similar users using a Pearson distance metric. The rating is the weighted average of the top k user\'s rating for the film.
+We have used the Numpy build-in SVD algorithm for this. Despite the optimisation strategies, we expect the results achieved with SVD to be suboptimal due to the large number of missing values, and the inaccuracy introduced by the imputation of those values. We use this algorithm as a baseline and we try to improve it with better strategies for matrix factorisation or alternative approaches of finding the latent factor representation.
+\\
 
-item-based kNN: Calculate the similarity between the films a user has already rated and the film in question. The predicted rating is then a weighted average of their ratings using the similarities as weights.
+\subsubsection*{\textbf{SGD for SVD}} The main idea of the algorithm is to avoid the need of filling in the missing values in the k-rank approximation of the rating matrix. 
+
+Instead of doing the standard SVD which requires a full matrix, we use only the available ratings in a Stochastic Gradient Descent method. The function we minimize is :
+
+\begin{equation}
+equation for SGD
+\end{equation}
+
+The approximation should be much more representative of the data as it only uses real ratings. The algorithm was very sensitive to hyper-parameters so those were optimised on both a local validation set and the online Kaggle score. 
+\\
+
+\subsubsection*{\textbf{RBM}}
+stuff stuff
+\\
+
+\subsubsection*{\textbf{user-based kNN}} Find the top k most similar users using a Pearson distance metric. The rating is the weighted average of the top k user\'s rating for the film.
+\\
+\subsubsection*{\textbf{item-based kNN}}  Calculate the similarity between the films a user has already rated and the film in question. The predicted rating is then a weighted average of their ratings using the similarities as weights.
 
 \subsection{Bold Driver Learning Rate} 
 One of the biggest boosts to our system was the incorporating of the bold drive technique in the calculation of the learning rate in both SGD and RBM. This is an adaptive learning rate given by:
