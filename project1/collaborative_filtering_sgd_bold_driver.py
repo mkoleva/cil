@@ -13,16 +13,7 @@ mean_global_rating = 0
 
 #global SGD matrices
 P, Q, B_user, B_item = [], [], [], []
-def memodict(f):
-    """ Memoization decorator for a function taking a single argument """
-    class memodict(dict):
-        def __missing__(self, key):
-            ret = self[key] = f(key)
-            return ret 
-    return memodict().__getitem__
 
-
-# @memodict
 def lookupError(r, bias_user, bias_item, p, q):
     return r - predict(bias_user, bias_item, p, q)
 
@@ -30,12 +21,6 @@ def predict(bias_user, bias_item, p, q):
     score = mean_global_rating + bias_user + bias_item + np.dot(p,q)
     # return score if score >=1 and score<=5 else max(1, min(5, score))
     return score
-
-def generateRandomSubset(len, upTo):
-    allIndeces = np.arange(upTo)
-    np.random.shuffle(allIndeces)
-    return allIndeces[:len]
-
 
 def generateRandomSubsetForCV(cv, dataLen):
 
@@ -54,19 +39,12 @@ def matrix_factorisation(training_data, validation_data, epochs=200, learning_ra
     global P, Q, B_item, B_user
 
     Q = Q.T
-    t=0.0
     previous_error=100000000.0
-    previous_B_user=np.zeros(B_user.shape)
-    previous_B_item=np.zeros(B_item.shape)
-    previous_Q=np.zeros(Q.shape)
-    previous_P=np.zeros(P.shape)
 
     for epoch in xrange(epochs):
         counter = 0
         print("epoch ", epoch)
-        #learning_rate_decreasing=learning_rate*(1.0/(1.0+t/p))
         print learning_rate
-        # training_data = zip(user_training, movie_training, rating_training)
         np.random.shuffle(training_data)
 
         for (i, j, r) in training_data:
@@ -80,35 +58,29 @@ def matrix_factorisation(training_data, validation_data, epochs=200, learning_ra
             nP = P[i, :]
 
             temp_update_P= learning_rate*(eij*Q[:, j] - lam*P[i,:])
-            P[i, :] += temp_update_P #+ m*previous_P[i,:]
-            #previous_P[i,:]=temp_update_P
+            P[i, :] += temp_update_P
 
             temp_update_Q=learning_rate*(eij*nP - lam*Q[:,j])
-            Q[:,j] += temp_update_Q #+ m*previous_Q[:,j]
-            #previous_Q[:,j]=temp_update_Q
+            Q[:,j] += temp_update_Q
 
             temp_B_user_update=learning_rate*(eij - lam*B_user[i])
-            B_user[i] += temp_B_user_update #+ m*previous_B_user[i]
-            #previous_B_user[i]=temp_B_user_update
+            B_user[i] += temp_B_user_update
 
             temp_B_item_update=learning_rate*(eij - lam*B_item[j])
-            B_item[j] += temp_B_item_update #+ m*previous_B_item[j]
-            #previous_B_item[j]=temp_B_item_update
+            B_item[j] += temp_B_item_update
 
-            #P[i, :] = nP
 
         e = 0
         testCounter = 0
 
         for (i, j, r) in validation_data:
-            # print r, np.dot(P[i,:], Q[:,j])
             e += pow(lookupError(r, B_user[i], B_item[j], P[i, :], Q[:, j]), 2)
-        t+=1.0
 
         if(e<=previous_error):
             learning_rate *= (1.0+inc)
         else:
             learning_rate *= dec
+
         previous_error=e
 
         print np.sqrt(e / np.shape(validation_data)[0])
