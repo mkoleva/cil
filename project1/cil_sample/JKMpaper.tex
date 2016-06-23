@@ -4,6 +4,7 @@
 %\usepackage{balance}
 \usepackage{url}
 \usepackage{graphicx}	% For figure environment
+\usepackage{color}
 
 
 \begin{document}
@@ -35,9 +36,9 @@ Recommender systems have gained increasing popularity in the last 10-15 years, m
 
 In this paper, we concentrate on the collaborative-filtering approach to recommender systems, which relies on previous user experiences (ratings), rather than pre-defined user profile [some ref about the two types]. We use the Netflix dataset with ratings from 10000 users on 1000 films, which has driven a lot of the innovation in the area and allows us to compare our solutions to the state-of-the-art. 
 
-Our main contribution consists of combining latent factor models (SVD, SGD SVD, RBM) and neighbourhood models (user- and item-based kNN) to produce a robust recommender system which optimises the RMSE of predicted ratings on X[how many films] from Blaa to Bllaa. Furthermore, we show that the addition of a more complex learning rate algorithm improves the score significantly, to X. 
+Our main contributions are two-fold: we first combine latent factor models (SVD, SGD SVD, RBM) and neighbourhood models (user- and item-based kNN) to produce a robust recommender system which optimises the RMSE of predicted ratings on X[how many films] from Blaa to Bllaa. Second, we show that the addition of a more complex learning rate heuristic on stochastic gradient descent and restricted Boltzmann machines improves the score significantly, to X. 
 
-In Section \ref{sec:models} we describe the idea and the implementation of our systems. We present the results from the local evaluation of the models and from the validation set on Kaggle in Section \ref{sec:results}. Finally, in Section \ref{sec:discussion} we interpret the improvements we achieved and discuss potential weakness and future work.
+In Section \ref{sec:models} we describe the idea and the implementation of our systems. We present the results from the local evaluation of the models and from the validation set on Kaggle in Section \ref{sec:results}. Finally, in Section \ref{sec:discussion} we interpret the improvements we achieved and discuss potential weaknesses and future work.
 
 
 
@@ -46,36 +47,44 @@ In Section \ref{sec:models} we describe the idea and the implementation of our s
 All work is done on the Netflix dataset provided for the project. The data is a collection of \textit{(user, film, rating)} tuples. For training, we have 1176953 ratings available. The online evaluation on Kaggle is performed on another 1176953 ratings. We were able to see the prediction accuracy on 50\% of that online dataset and our goal was to improve that as it is believed to be very similar to the other 50\% of the data.
 \subsection{Data Model}
 
-The provided dataset can be most naturally seen as an $NxM$ matrix, with $N$ being the 10000 unique users, and $M$ - 1000 films. If every user had rated every film, the matrix would have more than $10^7$ entries. However, in this realistic scenario, this is not the case and our matrix is quite sparse. From here stems the difficulty of the problem - we attempt to predict more than a million ratings based on very incomplete dataset. 
+The provided dataset can be most naturally seen as an $N\times M$ matrix, with $N$ being the number of users ($N=~10000$), and $M$ the number of films ($M=1000$). If every user had rated every film, the matrix would have $10^7$ entries. However, in this realistic scenario, this is not the case and our matrix is quite sparse. From here stems the difficulty of the problem - we attempt to predict more than a million ratings based on a very incomplete dataset. 
 
-There are two main views which define the methods of tackling this problem.
+There are two main views which yield different methods for tackling this problem.
 
-\subsubsection*{\textbf{Latent factor models}} This approach tries to explain the ratings as influenced by a set of unknown factors. Both users and items can be characterised by those latent factors and they are represented as feature vectors in this latent feature space. The rating of a film is approximate by the dot product between the user and the film feature vectors.
+\subsubsection*{\textbf{Latent factor models}} 
 
-The different methods then aim to infer the underlying film and user feature vectors from the available ratings, most successfully through matrix factorisation techniques and approximations. We discuss SVD, SGD SVD and RBM. 
-\\
+%{\color{red} Modify because of RBM} This approach tries to explain the ratings as influenced by a set of unknown (latent) factors. Both users and items can be characterized by these latent factors and they are represented as low-dimensional feature vectors in this latent feature space. The rating of a film is approximated by the dot product between the user and film feature vectors.
+%
+%The different methods then aim to infer the underlying film and user feature vectors from the available ratings, most successfully through matrix factorization techniques and approximations. We discuss Singular Value Decomposition and Stochastic Gradient Descent as particular examples of methods which follow this approach.
+%
+%We also discuss another latent factor model which is based on a different philosophy.
+
+These models attempt to explain film ratings by users as being influenced by a set of unknown (also called \emph{latent}) factors.
+
+One approach characterizes users and films by low-dimensional feature vectors in a latent feature space. The rating of a given film by a given user is then modeled by the dot product between the corresponding user and film feature vectors. The different methods then aim to infer the underlying film and user feature vectors from the available ratings, most successfully through matrix factorization techniques and approximations. As examples of this approach, we discuss Singular Value Decomposition and Stochastic Gradient Descent.
+
+It is also possible to model missing ratings through neural networks which are composed by visible and latent units. In particular, we discuss Restricted Boltzmann Machines. At a high level, for each user-film pair whose rating is missing, the neural network learns a probability distribution over the possible ratings (1 to 5) from the known ratings. The prediction is then simply the expected value of this distribution.
+
 
 \subsubsection*{\textbf{Neighbourhood-based models}} Another approach to the collaborative filtering problem is to view the ratings as features of either the users (user-based) or the films (item-based). In the former case, a user A is represented as a sparse feature vector of their ratings and we would base our prediction on other users who have rated those films similarly. In the latter scenario, we would use the similarity between the new film and the films already rated by A to estimate the new rating. Each film is a feature vector of all users' ratings. We review an implementation of both in the next subsection.
 
 \subsection{Algorithms}
 We investigated three algorithms which concentrate on solving the latent-factor model problem and two which work on the neighbourhood model:
 
-\subsubsection*{\textbf{SVD}} Given the latent factor model described above, the rating matrix is produced by the multiplication of the users matrix and films matrix which are all on the same feature space. The most natural way to infer the users and films representation is using a matrix factorisation approach so SVD comes directly to mind[some refs here]. The main issue is that SVD works on full matrices and as mentioned above, this is not the case. Hence, we need to impute the missing values before we can proceed. This introduces noise and leads to sup-optimal results. We hope to minimize the noise and the overfitting by looking for a low-rank ($k$) approximation of the rating matrix. 
-\\
+\subsubsection*{\textbf{Singular Value Decomposition}} Given the latent factor model described above, the rating matrix is produced by the multiplication of the users matrix and films matrix which are all on the same feature space. The most natural way to infer the users and films representation is using a matrix factorisation approach so SVD comes directly to mind[some refs here]. The main issue is that SVD works on full matrices and as mentioned above, this is not the case. Hence, we need to impute the missing values before we can proceed. This introduces noise and leads to sup-optimal results. We hope to minimize the noise and the overfitting by looking for a low-rank ($k$) approximation of the rating matrix. 
 
 We experimented with imputation strategies, different number of latent features and values for k using a local validation set. We concluded that the best results were accomplished using XX features and Equation \ref{eq:imputation} for imputation:
 
 \begin{equation}
-R_ij = 0.5*AvgUser[i] + 0.5*AvgFilm[j]
+R_{ij}= 0.5\cdot \textnormal{AvgUser}[i] + 0.5\cdot \textnormal{AvgFilm}[j]
 \label{eq:imputation}
 \end{equation}
 
-A missing rating of user $i$ for film $j$ is calculated as a linear combination of the average rating given by user $i$ and the average rating received by film $j$ from all other users. If any of those values is missing due to a film with no ratings or user with no rated films, the other values is used.
+A missing rating of user $i$ for film $j$ is calculated as a linear combination of the average rating given by user $i$, $\textnormal{AvgUser}[i]$, and the average rating received by film $j$ from all other users, $\textnormal{AvgFilm}[j]$. If any of those values is missing due to a film with no ratings or user with no rated films, the other value is used.
 
-We have used the Numpy build-in SVD algorithm for this. Despite the optimisation strategies, we expect the results achieved with SVD to be suboptimal due to the large number of missing values, and the inaccuracy introduced by the imputation of those values. We use this algorithm as a baseline and we try to improve it with better strategies for matrix factorisation or alternative approaches of finding the latent factor representation.
-\\
+We have used the Numpy built-in SVD algorithm for this. Despite the optimization strategies, we expect the results achieved with SVD to be suboptimal due to the large number of missing values, and the inaccuracy introduced by the imputation of those values. We use this algorithm as a baseline and we try to improve it with better strategies for matrix factorization or alternative approaches of finding the latent factor representation.
 
-\subsubsection*{\textbf{SGD for SVD}} The main idea of the algorithm is to avoid the need of filling in the missing values in the k-rank approximation of the rating matrix. 
+\subsubsection*{\textbf{Stochastic Gradient Descent for Singular Value Decomposition}} The main idea of the algorithm is to avoid the need of filling in the missing values in the $k$-rank approximation of the rating matrix. 
 
 Instead of doing the standard SVD which requires a full matrix, we use only the available ratings in a Stochastic Gradient Descent method. The function we minimize is :
 
@@ -83,23 +92,23 @@ Instead of doing the standard SVD which requires a full matrix, we use only the 
 equation for SGD
 \end{equation}
 
-The approximation should be much more representative of the data as it only uses real ratings. The algorithm was very sensitive to hyper-parameters so those were optimised on both a local validation set and the online Kaggle score. 
-\\
+The approximation should be much more representative of the data as it only uses real ratings. The algorithm was very sensitive to hyper-parameters so those were optimized on both a local validation set and the online Kaggle score. 
 
-\subsubsection*{\textbf{RBM}}
-stuff stuff
-\\
+\subsubsection*{\textbf{Restricted Boltzmann machines}}
 
-\subsubsection*{\textbf{user-based kNN}} Find the top k most similar users using a Pearson distance metric. The rating is the weighted average of the top k user\'s rating for the film.
-\\
-\subsubsection*{\textbf{item-based kNN}}  Calculate the similarity between the films a user has already rated and the film in question. The predicted rating is then a weighted average of their ratings using the similarities as weights.
+Restricted Boltzmann machines (RBM's) are two-layer graphical models
+
+\subsubsection*{\textbf{User-based $k$-Nearest Neighbors}} Find the top k most similar users using a Pearson distance metric. The rating is the weighted average of the top k user\'s rating for the film.
+
+\subsubsection*{\textbf{Item-based $k$-Nearest Neighbors}}  Calculate the similarity between the films a user has already rated and the film in question. The predicted rating is then a weighted average of their ratings using the similarities as weights.
 
 \subsection{Bold Driver Learning Rate} 
 One of the biggest boosts to our system was the incorporating of the bold drive technique in the calculation of the learning rate in both SGD and RBM. This is an adaptive learning rate given by:
 [some formula]
 
-\subsection{Parameter optimisation and validation} 
+\subsection{Parameter optimization and validation} 
 The general protocol for training and testing followed the steps below:
+
 \begin{enumerate}
 \item Choose a random subset of the test samples for a local validation set if not already chosen. This was in most cases 5\% of the data, so xxxx samples and was only done by the first algorithm, so that all algorithms are trained on the same data.
 
@@ -315,5 +324,5 @@ The author thanks Christian Sigg for his careful reading and helpful
 suggestions.
 
 \bibliographystyle{IEEEtran}
-\bibliography{howto-paper}
+\bibliography{JKM-literature}
 \end{document}
