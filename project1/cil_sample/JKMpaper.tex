@@ -71,7 +71,7 @@ It is also possible to model missing ratings through neural networks which are c
 \subsection{Algorithms}
 We investigated three algorithms which concentrate on solving the latent-factor model problem and two which work on the neighbourhood model:
 
-\subsubsection*{\textbf{Singular Value Decomposition}} Given the latent factor model described above, the rating matrix is produced by the multiplication of the users matrix and films matrix which are all on the same feature space. The most natural way to infer the users and films representation is using a matrix factorisation approach so SVD comes directly to mind[some refs here]. The main issue is that SVD works on full matrices and as mentioned above, this is not the case. Hence, we need to impute the missing values before we can proceed. This introduces noise and leads to sup-optimal results. We hope to minimize the noise and the overfitting by looking for a low-rank ($k$) approximation of the rating matrix. 
+\subsubsection*{\textbf{Singular Value Decomposition (SVD)}} Given the latent factor model described above, the rating matrix is produced by the multiplication of the users matrix and films matrix which are all on the same feature space. The most natural way to infer the users and films representation is using a matrix factorisation approach so SVD comes directly to mind[some refs here]. The main issue is that SVD works on full matrices and as mentioned above, this is not the case. Hence, we need to impute the missing values before we can proceed. This introduces noise and leads to sup-optimal results. We hope to minimize the noise and the overfitting by looking for a low-rank ($k$) approximation of the rating matrix. 
 
 We experimented with imputation strategies, different number of latent features and values for k using a local validation set. We concluded that the best results were accomplished using XX features and Equation \ref{eq:imputation} for imputation:
 
@@ -84,7 +84,7 @@ A missing rating of user $i$ for film $j$ is calculated as a linear combination 
 
 We have used the Numpy built-in SVD algorithm for this. Despite the optimization strategies, we expect the results achieved with SVD to be suboptimal due to the large number of missing values, and the inaccuracy introduced by the imputation of those values. We use this algorithm as a baseline and we try to improve it with better strategies for matrix factorization or alternative approaches of finding the latent factor representation.
 
-\subsubsection*{\textbf{Stochastic Gradient Descent for Singular Value Decomposition}} The main idea of the algorithm is to avoid the need of filling in the missing values in the $k$-rank approximation of the rating matrix. 
+\subsubsection*{\textbf{Stochastic Gradient Descent (SGD) for SVD}} The main idea of the algorithm is to avoid the need of filling in the missing values in the $k$-rank approximation of the rating matrix. 
 
 Instead of doing the standard SVD which requires a full matrix, we use only the available ratings in a Stochastic Gradient Descent method. The function we minimize is :
 
@@ -94,9 +94,9 @@ equation for SGD
 
 The approximation should be much more representative of the data as it only uses real ratings. The algorithm was very sensitive to hyper-parameters so those were optimized on both a local validation set and the online Kaggle score. 
 
-\subsubsection*{\textbf{Restricted Boltzmann Machines}}
+\subsubsection*{\textbf{Restricted Boltzmann Machines (RBM's)}}
 
-Restricted Boltzmann machines (RBM's) are two-layer undirected graphical models. Recently, RBM's have found applications in collaborative filtering, as illustrated in \cite{SMH07}. Our approach is largely based on this paper.
+RBM's are two-layer undirected graphical models. Recently, they have found applications in collaborative filtering, as illustrated in \cite{SMH07}. Our approach is largely based on this paper.
 
 
 
@@ -108,7 +108,7 @@ We made use of the built-in BernoulliRBM package in sklearn. Furthermore, we mod
 \subsubsection*{\textbf{Item-based $k$-Nearest Neighbors}}  Calculate the similarity between the films a user has already rated and the film in question. The predicted rating is then a weighted average of their ratings using the similarities as weights.
 
 \subsection{The bold driver heuristic} 
-One of the biggest boosts to our score came from incorporating the bold driver heuristic for the learning rate in both SGD and RBM. This technique works as follows: Suppose we start with learning rate $\lambda$. After each epoch we compute the current error on the validation set and compare it with the error of the previous epoch. If the error increased from one epoch to the other, we decrease $\lambda$ to $d\lambda$, where $d\in[0,1]$ is a parameter we must set. On the other hand, if the error decreased, we increase $\lambda$ to $(1+c)\lambda$, where $c\geq 0$ is a parameter we must also set. Intuitively, the bold driver heuristic speeds up the convergence when we are going in the right direction and breaks quite sharply when we have missed a minimum and must turn around, so we do not miss it again by much.
+One of the biggest boosts to our score came from incorporating the bold driver heuristic for the learning rate in both SGD and RBM. This technique works as follows: Suppose we start with learning rate $\lambda$. After each epoch we compute the current error on the validation set and compare it with the error of the previous epoch. If the error increased from one epoch to the other, we decrease $\lambda$ to $d\lambda$, where $d\in[0,1]$ is a parameter we must set. On the other hand, if the error decreased, we increase $\lambda$ to $(1+c)\lambda$, where $c\geq 0$ is a parameter we must also set. Intuitively, the bold driver heuristic speeds up the convergence when we are going in the right direction and breaks quite sharply when we have missed a minimum and must turn around, so we do not miss it again by much. Thus, the bold driver heuristic adapts the learning rate to the surface we are trying to maneuver.
 
 By playing with the parameters $\lambda$, $c$ and $d$ we can increase the performance of our methods significantly. In our case, for SGD, we obtained our best scores by setting $\lambda=0.001$, $c=0.05$, and $d=0.7$.
 
