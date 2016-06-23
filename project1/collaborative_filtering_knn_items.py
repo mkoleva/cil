@@ -14,34 +14,45 @@ amount_of_validation = 0.01
 weight_matrix = np.zeros((1000, 1000))
 rating_matrix = np.zeros((10000, 1000))
 
+def memodict(f):
+    """ Memoization decorator for a function taking a single argument """
+    class memodict(dict):
+        def __missing__(self, key):
+            ret = self[key] = f(key)
+            return ret
+    return memodict().__getitem__
 
-def get_indices_of_nearest_neighbors(movie, ratedMovies, k):
-    """Get the closest neighbours of a user
+@memodict
+def get_indices_of_nearest_neighbors(params):
+    """Get the closest neighbours of a movie
 
-    Memoized so that it is not recalculated again and again for the same user
+    Memoized so that it is not recalculated again and again for the same movie
     """
-    ind = (-weight_matrix[movie][ratedMovies]).argsort()[:k]
-    return ratedMovies[ind]
+    movie, k = params
 
+    return (-weight_matrix[movie,:]).argsort()[:k]
 
-def predict_rating(user, movie):
-
-    # indices_of_nearest_neigbours = get_indices_of_nearest_neighbors(weight_matrix[user, :], k)
-    # nearestNeighbours = np.shape(indices_of_nearest_neigbours)[0]
+def predict_rating(user, movie, k):
+    global rating_matrix, weight_matrix, averages_of_users
 
     numerator, denominator = 0.0, 0.0
 
     this_user = rating_matrix[user]
     rated_films = np.nonzero(this_user)[0]
-    # closest_films = get_indices_of_nearest_neighbors(movie, rated_films, k)
-    for movieInd in rated_films:
+    closest_films = get_indices_of_nearest_neighbors((movie, k))
+
+    for movieInd in closest_films:
 
         if this_user[movieInd] != 0:
             numerator += weight_matrix[movieInd, movie]*this_user[movieInd]
 
-        denominator += weight_matrix[movieInd, movie]
+            denominator += weight_matrix[movieInd, movie]
 
-    predicted_rating = numerator / denominator
+    predicted_rating = averages_of_users[user]
+    if denominator != 0:
+        predicted_rating = numerator / denominator
+
+
 
     return predicted_rating
 
@@ -66,7 +77,7 @@ def do_prediction(best_k):
         user = int(entry[0][1:])
         movie = int(entry[1][1:])
 
-        predicted_rating = predict_rating(user - 1, movie - 1)
+        predicted_rating = predict_rating(user - 1, movie - 1, best_k)
 
         if predicted_rating > 5:
             f.write('r%d_c%d,%f\n' % (user, movie, 5))
@@ -76,9 +87,39 @@ def do_prediction(best_k):
     f.close()
 
 def do_validation(validationSubset):
+    best_error = 10
+    best_k = 1000
+
+    if False:
+        save_for_validation = []
+        save_k = []
+        for k in range(100, 1000, 100):
+            error = 0
+            for (u, m, rating) in validationSubset:
+                predicted_rating = predict_rating(u, m, k)
+
+                error += pow((predicted_rating - rating), 2)
+
+            error /= np.shape(validationSubset)[0]
+            error = np.sqrt(error)
+
+            save_k.append(k)
+            save_for_validation.append(error)
+
+            print k, error
+
+            if error < best_error:
+                best_error = error
+                best_k = k
+
+        np.save('data/knn/save_knn_item_k_validation_for_plot', save_k)
+        np.save('data/knn/save_knn_item_error_validation_for_plot', save_for_validation)
+
+    print best_k
+
     error = 0
     for (u, m, rating) in validationSubset:
-        predicted_rating = predict_rating(u, m)
+        predicted_rating = predict_rating(u, m, best_k)
         # print predicted_rating
 
         error += pow((predicted_rating - rating), 2)
@@ -89,7 +130,7 @@ def do_validation(validationSubset):
     feature_vector_for_regression = []
 
     for (u, m, rating) in validationSubset:
-        predicted_rating = predict_rating(u, m)
+        predicted_rating = predict_rating(u, m, best_k)
         feature_vector_for_regression.append([predicted_rating, rating])
 
     np.save('data/knn/feature_vector_knn_items', feature_vector_for_regression)
@@ -97,7 +138,7 @@ def do_validation(validationSubset):
 
 def code():
 
-    weight_matrix = True
+    weight_matrix_computed = True
     validation_indices_computed = True
 
     global weight_matrix, averages_of_users, averages_of_movies, valSetSize, numRatings
@@ -119,13 +160,23 @@ def code():
     for (u, m, rating) in trainingSubset:
         rating_matrix[u][m] = rating
 
-    print "rating matrix: ", rating_matrix.shape
+    averages_of_movies, averages_of_users = computeAverages(rating_matrix)
 
-    if weight_matrix:
+    # missing values will go from 0 to negative, convert back to 0
+    mask_of_unrated_items = np.where(rating_matrix==0)
+    tmp_matrix_of_averages = np.zeros((10000,1000))
+    tmp_matrix_of_averages = tmp_matrix_of_averages + averages_of_movies[:, np.newaxis].T
+
+    # remove means for every user at every location where he rated a movie.. unrated movies should stay 0
+    tmp_matrix_of_averages[mask_of_unrated_items] = 0
+
+    centered_rating_matrix = rating_matrix - tmp_matrix_of_averages
+
+    if weight_matrix_computed:
         try:
             weight_matrix = np.load('data/knn/weight_matrix_items.npy')
         except Exception as e:
-            print "Coundn't load the matrix ", e
+            print "Could not load the matrix ", e
             weight_matrix = compute_weight_matrix(rating_matrix=rating_matrix.T, metric=nan_dist_items) 
             np.save('data/knn/weight_matrix_items', weight_matrix)
 

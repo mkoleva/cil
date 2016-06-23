@@ -8,8 +8,6 @@ from scipy.spatial.distance import correlation as corr_dist
 from scipy.spatial.distance import pdist, cdist
 
 
-numRatings = 0
-valSetSize = 0
 amount_of_validation = 0.01
 """this is the pearson distance global weight matrix"""
 weight_matrix = np.zeros((10000, 10000))
@@ -79,6 +77,7 @@ def get_indices_of_nearest_neighbors(params):
 
 
 def predict_rating(user, movie, k=20):
+    global rating_matrix, weight_matrix, averages_of_users
 
     indices_of_nearest_neigbours = get_indices_of_nearest_neighbors((user, k))
 
@@ -88,9 +87,11 @@ def predict_rating(user, movie, k=20):
             numerator += weight_matrix[user, current_neighbour] \
                          * (rating_matrix[current_neighbour, movie] - averages_of_users[current_neighbour])
 
-        denominator += weight_matrix[user, current_neighbour]
+            denominator += abs(weight_matrix[user, current_neighbour])
 
-    predicted_rating = averages_of_users[user] + numerator / denominator
+    predicted_rating = averages_of_users[user]
+    if denominator != 0:
+        predicted_rating = averages_of_users[user] + numerator / denominator
 
     return predicted_rating
 
@@ -128,22 +129,33 @@ def do_prediction(best_k):
 def do_validation(validationSubset):
 
     best_error = 10
-    best_k = 1
-    for k in range(50, 70, 3):
-        error = 0
-        for (u, m, rating) in validationSubset:
-            predicted_rating = predict_rating(u, m, k)
-            # print predicted_rating
+    best_k = 3500
 
-            error += pow((predicted_rating - rating), 2)
+    if False:
+        save_for_validation = []
+        save_k = []
+        for k in range(1000, 10000, 500):
+            error = 0
+            for (u, m, rating) in validationSubset:
+                predicted_rating = predict_rating(u, m, k)
+                # print predicted_rating
 
-        error /= np.shape(validationSubset)[0]
+                error += pow((predicted_rating - rating), 2)
 
-        print k, np.sqrt(error)
+            error /= np.shape(validationSubset)[0]
+            error = np.sqrt(error)
 
-        if error < best_error:
-            best_error = error
-            best_k = k
+            save_k.append(k)
+            save_for_validation.append(error)
+
+            print k, error
+
+            if error < best_error:
+                best_error = error
+                best_k = k
+
+        np.save('data/knn/save_knn_user_k_validation_for_plot', save_k)
+        np.save('data/knn/save_knn_user_error_validation_for_plot', save_for_validation)
 
     print best_k
 
@@ -163,7 +175,7 @@ def code():
     weight_matrix_computed = True
     indices_for_validation_computed = True
 
-    global weight_matrix, averages_of_users, averages_of_movies, valSetSize, numRatings
+    global rating_matrix, weight_matrix, averages_of_users, averages_of_movies
 
     trainingSubset = parseInputMatrix()
 
@@ -185,16 +197,25 @@ def code():
 
     averages_of_movies, averages_of_users = computeAverages(rating_matrix)
 
-    print averages_of_users.shape
-    # remove means for every user
-    centered_rating_matrix = rating_matrix - averages_of_users[:, np.newaxis]
     # missing values will go from 0 to negative, convert back to 0
-    centered_rating_matrix = centered_rating_matrix.clip(min=0)  
+    mask_of_unrated_items = np.where(rating_matrix==0)
+    tmp_matrix_of_averages = np.zeros((10000,1000))
+    tmp_matrix_of_averages = tmp_matrix_of_averages + averages_of_users[:, np.newaxis]
 
-    if weight_matrix_computed == True:
-        weight_matrix = np.load('data/knn/weight_matrix.npy')
+    # remove means for every user at every location where he rated a movie.. unrated movies should stay 0
+    tmp_matrix_of_averages[mask_of_unrated_items] = 0
+
+    centered_rating_matrix = rating_matrix - tmp_matrix_of_averages
+
+    if weight_matrix_computed:
+        try:
+            weight_matrix = np.load('data/knn/weight_matrix.npy')
+        except Exception as e:
+            print "Coundn't load the matrix ", e
+            weight_matrix = compute_weight_matrix(rating_matrix=centered_rating_matrix, metric=nan_dist_users)
+            np.save('data/knn/weight_matrix', weight_matrix)
+
     else:
-        # pearson == cosine on centered matrix
         weight_matrix = compute_weight_matrix(rating_matrix=centered_rating_matrix, metric=nan_dist_users)
         np.save('data/knn/weight_matrix', weight_matrix)
 
