@@ -40,7 +40,7 @@ def impute_rating_matrix():
                 elif averages_of_movies[j] == 0:
                     matrix_imputed[i][j] = averages_of_users[j]
                 else:
-                    matrix_imputed[i][j] = 0.5 * averages_of_users[i] + 0.5 * averages_of_movies[j]
+                    matrix_imputed[i][j] = 0.25 * averages_of_users[i] + 0.75 * averages_of_movies[j]
 
     print "finished imputing matrix...\n"
 
