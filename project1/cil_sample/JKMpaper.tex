@@ -73,7 +73,7 @@ We investigated three algorithms which concentrate on solving the latent-factor 
 
 \subsubsection*{\textbf{Singular Value Decomposition (SVD)}} Given the latent factor model described above, the rating matrix is produced by the multiplication of the users matrix and films matrix which are all on the same feature space. The most natural way to infer the users and films representation is using a matrix factorisation approach so SVD comes directly to mind[some refs here]. The main issue is that SVD works on full matrices and as mentioned above, this is not the case. Hence, we need to impute the missing values before we can proceed. This introduces noise and leads to sup-optimal results. We hope to minimize the noise and the overfitting by looking for a low-rank ($k$) approximation of the rating matrix. 
 
-We experimented with imputation strategies, different number of latent features and values for k using a local validation set. We concluded that the best results were accomplished using XX features and Equation \ref{eq:imputation} for imputation:
+We experimented with input strategies, different number of latent features and values for $k$ using a local validation set. We concluded that the best results were accomplished using XX features and Equation \ref{eq:imputation} for imputation:
 
 \begin{equation}
 R_{ij}= 0.5\cdot \textnormal{AvgUser}[i] + 0.5\cdot \textnormal{AvgFilm}[j]
@@ -96,11 +96,13 @@ The approximation should be much more representative of the data as it only uses
 
 \subsubsection*{\textbf{Restricted Boltzmann Machines (RBM's)}}
 
-RBM's are two-layer undirected graphical models. Recently, they have found applications in collaborative filtering, as illustrated in \cite{SMH07}. Our approach is largely based on this paper.
+RBM's are neural networks consisting of a layer of visible units and a layer of hidden units. Each unit has a stochastic binary random variable associated with it. There may be undirected connections between hidden and visible units, but no hidden-hidden or visible-visible connections are allowed. Thus, an RBM takes the form of a bipartite graph, where each layer corresponds to a different bipartition. These networks are a restricted version of Boltzmann machines (hence the name), introduced in \cite{AHS85}.
 
+Recently, RBM's found application in collaborative filtering, as illustrated in \cite{SMH07}. Our approach is largely based on this paper, and we proceed to describe the method.
 
+We build a different RBM for each user. Given a user $u$, we construct a binary-valued $5\times 1000$ matrix $V=\{v_{ki}\}$, such that $v_{ki}=1$ if and only if user $u$ rated film $i$ with rating $k$. Missing ratings for $u$ then correspond to all-zero columns in $V$. To each entry $v_{ki}$ in a column of $V$ corresponding to an observed rating we associate a visible unit in the RBM, which we also denote by $v_{ki}$ for simplicity. The binary value associated with unit $v_{ki}$ is initially set to be the value of entry $v_{ki}$ in $V$. Furthermore, we add $F$ hidden units $h_1,\dots,h_F$ to the RBM, where $F$ is a parameter which we set, and which is the same for all users. Finally, for each hidden unit $h_j$ we add connections to every visible unit in the RBM.
 
-We made use of the built-in BernoulliRBM package in sklearn. Furthermore, we modified the source code to add an heuristic for the learning rate of the RBM, which improved its performance.
+We made use of the built-in BernoulliRBM algorithm in sklearn. Furthermore, we modified the source code to add an heuristic for the learning rate of the RBM, which improved its performance.
 
 
 \subsubsection*{\textbf{User-based $k$-Nearest Neighbors}} Find the top k most similar users using a Pearson distance metric. The rating is the weighted average of the top k user\'s rating for the film.
