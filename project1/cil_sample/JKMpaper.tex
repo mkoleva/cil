@@ -94,17 +94,25 @@ equation for SGD
 
 The approximation should be much more representative of the data as it only uses real ratings. The algorithm was very sensitive to hyper-parameters so those were optimized on both a local validation set and the online Kaggle score. 
 
-\subsubsection*{\textbf{Restricted Boltzmann machines}}
+\subsubsection*{\textbf{Restricted Boltzmann Machines}}
 
-Restricted Boltzmann machines (RBM's) are two-layer graphical models
+Restricted Boltzmann machines (RBM's) are two-layer undirected graphical models. Recently, RBM's have found applications in collaborative filtering, as illustrated in \cite{SMH07}. Our approach is largely based on this paper.
+
+
+
+We made use of the built-in BernoulliRBM package in sklearn. Furthermore, we modified the source code to add an heuristic for the learning rate of the RBM, which improved its performance.
+
 
 \subsubsection*{\textbf{User-based $k$-Nearest Neighbors}} Find the top k most similar users using a Pearson distance metric. The rating is the weighted average of the top k user\'s rating for the film.
 
 \subsubsection*{\textbf{Item-based $k$-Nearest Neighbors}}  Calculate the similarity between the films a user has already rated and the film in question. The predicted rating is then a weighted average of their ratings using the similarities as weights.
 
-\subsection{Bold Driver Learning Rate} 
-One of the biggest boosts to our system was the incorporating of the bold drive technique in the calculation of the learning rate in both SGD and RBM. This is an adaptive learning rate given by:
-[some formula]
+\subsection{The bold driver heuristic} 
+One of the biggest boosts to our score came from incorporating the bold driver heuristic for the learning rate in both SGD and RBM. This technique works as follows: Suppose we start with learning rate $\lambda$. After each epoch we compute the current error on the validation set and compare it with the error of the previous epoch. If the error increased from one epoch to the other, we decrease $\lambda$ to $d\lambda$, where $d\in[0,1]$ is a parameter we must set. On the other hand, if the error decreased, we increase $\lambda$ to $(1+c)\lambda$, where $c\geq 0$ is a parameter we must also set. Intuitively, the bold driver heuristic speeds up the convergence when we are going in the right direction and breaks quite sharply when we have missed a minimum and must turn around, so we do not miss it again by much.
+
+By playing with the parameters $\lambda$, $c$ and $d$ we can increase the performance of our methods significantly. In our case, for SGD, we obtained our best scores by setting $\lambda=0.001$, $c=0.05$, and $d=0.7$.
+
+It is interesting to note that usual implementations of the bold driver heuristic also erase an update when it increases the error. In our implementation we opted to keep all such updates. Through experimentation we came to the conclusion that erasing ``bad" updates did not lead to any increase of performance for our methods. {\color{red} Should we test this further?}
 
 \subsection{Parameter optimization and validation} 
 The general protocol for training and testing followed the steps below:

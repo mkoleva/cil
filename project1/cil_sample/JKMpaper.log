@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015) (preloaded format=pdflatex 2015.11.27)  23 JUN 2016 14:59
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015) (preloaded format=pdflatex 2015.11.27)  23 JUN 2016 17:15
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -222,40 +222,45 @@ LaTeX Font Info:    External font `cmex10' loaded for size
 
 
 ]
-<denoised_signal_1d.png, id=14, 578.16pt x 433.62pt>
+
+LaTeX Warning: Citation `SMH07' on page 2 undefined on input line 99.
+
+[2] <denoised_signal_1d.png, id=18, 578.16pt x 433.62pt>
 File: denoised_signal_1d.png Graphic file (type png)
 
 <use denoised_signal_1d.png>
-Package pdftex.def Info: denoised_signal_1d.png used on input line 131.
+Package pdftex.def Info: denoised_signal_1d.png used on input line 139.
 (pdftex.def)             Requested size: 243.91125pt x 182.93298pt.
 
-<local_wdenoised_1d.png, id=16, 578.16pt x 433.62pt>
+<local_wdenoised_1d.png, id=20, 578.16pt x 433.62pt>
 File: local_wdenoised_1d.png Graphic file (type png)
 
 <use local_wdenoised_1d.png>
-Package pdftex.def Info: local_wdenoised_1d.png used on input line 137.
+Package pdftex.def Info: local_wdenoised_1d.png used on input line 145.
 (pdftex.def)             Requested size: 243.91125pt x 182.93298pt.
- [2]
-
-LaTeX Warning: Citation `anderson04' on page 3 undefined on input line 167.
 
 
-LaTeX Warning: Citation `wavelab' on page 3 undefined on input line 167.
+LaTeX Warning: Citation `anderson04' on page 3 undefined on input line 175.
 
 
-LaTeX Warning: Citation `kallet04methods' on page 3 undefined on input line 175
+LaTeX Warning: Citation `wavelab' on page 3 undefined on input line 175.
+
+
+LaTeX Warning: Citation `kallet04methods' on page 3 undefined on input line 183
 .
 
+[3 <./denoised_signal_1d.png> <./local_wdenoised_1d.png>]
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <8> on input line 205.
+(Font)              <8> on input line 213.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <6> on input line 205.
-LaTeX Font Info:    Try loading font information for OT1+pcr on input line 228.
+(Font)              <6> on input line 213.
+LaTeX Font Info:    Try loading font information for OT1+pcr on input line 236.
+
 
 (/usr/local/texlive/2015/texmf-dist/tex/latex/psnfss/ot1pcr.fd
 File: ot1pcr.fd 2001/06/04 font definitions for OT1/pcr.
-) [3 <./denoised_signal_1d.png> <./local_wdenoised_1d.png>]
-Underfull \hbox (badness 10000) in paragraph at lines 250--251
+)
+Underfull \hbox (badness 10000) in paragraph at lines 258--259
 \OT1/ptm/m/n/10 This should give you a PDF doc-u-ment
  []
 
@@ -284,19 +289,19 @@ Before submitting the final camera ready copy, remember to:
  uses only Type 1 fonts and that every step in the generation
  process uses the appropriate paper size.
 
-[4] (./JKMpaper.aux)
+[4] [5] (./JKMpaper.aux)
 
 LaTeX Warning: There were undefined references.
 
  ) 
 Here is how much of TeX's memory you used:
- 2360 strings out of 493054
- 37551 string characters out of 6134759
+ 2361 strings out of 493054
+ 37558 string characters out of 6134759
  103384 words of memory out of 5000000
- 5861 multiletter control sequences out of 15000+600000
+ 5862 multiletter control sequences out of 15000+600000
  43619 words of font info for 79 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 38i,9n,23p,753b,293s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 38i,9n,23p,834b,293s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/local/texlive/2015/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/local/t
 exlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/te
 xlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/local/texl
@@ -309,10 +314,10 @@ ist/fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2015/texmf-dist/fonts/
 type1/urw/times/utmbi8a.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/urw
 /times/utmr8a.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/urw/times/utm
 ri8a.pfb>
-Output written on JKMpaper.pdf (4 pages, 251900 bytes).
+Output written on JKMpaper.pdf (5 pages, 255266 bytes).
 PDF statistics:
- 67 PDF objects out of 1000 (max. 8388607)
- 45 compressed objects within 1 object stream
+ 70 PDF objects out of 1000 (max. 8388607)
+ 47 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  11 words of extra memory for PDF output out of 10000 (max. 10000000)
 
