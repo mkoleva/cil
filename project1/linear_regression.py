@@ -44,7 +44,7 @@ def predict(regressor):
     svd = np.genfromtxt('data/svd/my_prediction_svd.csv', delimiter=',', dtype=None)
     sgd_c_40 = np.genfromtxt('data/sgd/my_prediction_sgd_40.csv', delimiter=',', dtype=None)
     sgd_c_80 = np.genfromtxt('data/sgd/my_prediction_sgd_80.csv', delimiter=',', dtype=None)
-    sgd_c_100 = np.genfromtxt('data/sgd/my_prediction_sgd_80.csv', delimiter=',', dtype=None)
+    sgd_c_100 = np.genfromtxt('data/sgd/my_prediction_sgd_100.csv', delimiter=',', dtype=None)
     knn = np.genfromtxt('data/knn/my_prediction_knn.csv', delimiter=',', dtype=None)
     knn_items = np.genfromtxt('data/knn/my_prediction_knn_items.csv', delimiter=',', dtype=None)
     rbm_80 = np.genfromtxt('data/rbm/my_prediction_rbm_80.csv', delimiter=',', dtype=None)
