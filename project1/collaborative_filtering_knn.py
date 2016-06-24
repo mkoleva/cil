@@ -15,6 +15,7 @@ averages_of_movies, averages_of_users = [], []
 rating_matrix = np.zeros((10000, 1000))
 centered_rating_matrix = np.zeros((10000, 1000))
 
+sorted_indices_of_neighbors = []
 
 movies_indices_rated_by_user = [set() for _ in xrange(10000)]
 
@@ -75,19 +76,26 @@ def get_indices_of_nearest_neighbors(params):
     user, k = params
     return (-weight_matrix[user, :]).argsort()[:k]
 
-
 def predict_rating(user, movie, k=20):
-    global rating_matrix, weight_matrix, averages_of_users
+    global rating_matrix, weight_matrix, averages_of_users, sorted_indices_of_neighbors
 
-    indices_of_nearest_neigbours = get_indices_of_nearest_neighbors((user, k))
+    indices_of_nearest_neigbours = sorted_indices_of_neighbors[user]
 
     numerator, denominator = 0.0, 0.0
+
+    counter_of_neighbors = 0
+
     for current_neighbour in indices_of_nearest_neigbours:
+        if counter_of_neighbors == k:
+            break
+
         if rating_matrix[current_neighbour, movie] != 0:
+            counter_of_neighbors += 1
+
             numerator += weight_matrix[user, current_neighbour] \
                          * (rating_matrix[current_neighbour, movie] - averages_of_users[current_neighbour])
 
-            denominator += abs(weight_matrix[user, current_neighbour])
+            denominator += weight_matrix[user, current_neighbour]
 
     predicted_rating = averages_of_users[user]
     if denominator != 0:
@@ -129,16 +137,15 @@ def do_prediction(best_k):
 def do_validation(validationSubset):
 
     best_error = 10
-    best_k = 3500
+    best_k = 40
 
     if False:
         save_for_validation = []
         save_k = []
-        for k in range(1000, 10000, 500):
+        for k in range(20, 100, 10):
             error = 0
             for (u, m, rating) in validationSubset:
                 predicted_rating = predict_rating(u, m, k)
-                # print predicted_rating
 
                 error += pow((predicted_rating - rating), 2)
 
@@ -175,7 +182,7 @@ def code():
     weight_matrix_computed = True
     indices_for_validation_computed = True
 
-    global rating_matrix, weight_matrix, averages_of_users, averages_of_movies
+    global rating_matrix, weight_matrix, averages_of_users, averages_of_movies, sorted_indices_of_neighbors
 
     trainingSubset = parseInputMatrix()
 
@@ -218,6 +225,8 @@ def code():
     else:
         weight_matrix = compute_weight_matrix(rating_matrix=centered_rating_matrix, metric=nan_dist_users)
         np.save('data/knn/weight_matrix', weight_matrix)
+
+    sorted_indices_of_neighbors = sort_indices_of_neighbors(weight_matrix)
 
     best_k = do_validation(validationSubset)
 

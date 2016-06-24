@@ -70,3 +70,7 @@ def compute_weight_matrix(rating_matrix, metric):
 
     weight_matrix = 1.0-dist_matrix  # convert to weight matrix from dist matrix
     return weight_matrix
+
+def sort_indices_of_neighbors(weight_matrix):
+    sorted_indices_of_neighbors = (-weight_matrix).argsort()
+    return sorted_indices_of_neighbors
