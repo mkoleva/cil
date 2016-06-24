@@ -16,45 +16,45 @@ Warning--I didn't find a database entry for "kallet04methods"
 -- See the "IEEEtran_bst_HOWTO.pdf" manual for usage information.
 
 Done.
-You've used 3 entries,
+You've used 4 entries,
             4039 wiz_defined-function locations,
-            835 strings with 7785 characters,
-and the built_in function-call counts, 2298 in all, are:
-= -- 186
-> -- 46
-< -- 20
-+ -- 26
-- -- 7
-* -- 121
-:= -- 366
-add.period$ -- 7
-call.type$ -- 3
-change.case$ -- 3
-chr.to.int$ -- 48
-cite$ -- 3
-duplicate$ -- 153
-empty$ -- 175
-format.name$ -- 9
-if$ -- 509
+            844 strings with 7917 characters,
+and the built_in function-call counts, 3240 in all, are:
+= -- 271
+> -- 60
+< -- 33
++ -- 36
+- -- 8
+* -- 165
+:= -- 505
+add.period$ -- 9
+call.type$ -- 4
+change.case$ -- 4
+chr.to.int$ -- 78
+cite$ -- 4
+duplicate$ -- 216
+empty$ -- 240
+format.name$ -- 10
+if$ -- 728
 int.to.chr$ -- 0
-int.to.str$ -- 3
-missing$ -- 26
-newline$ -- 32
-num.names$ -- 3
-pop$ -- 55
+int.to.str$ -- 4
+missing$ -- 34
+newline$ -- 35
+num.names$ -- 4
+pop$ -- 66
 preamble$ -- 1
 purify$ -- 0
 quote$ -- 2
-skip$ -- 172
+skip$ -- 248
 stack$ -- 0
-substring$ -- 115
-swap$ -- 129
-text.length$ -- 4
+substring$ -- 186
+swap$ -- 190
+text.length$ -- 7
 text.prefix$ -- 0
 top$ -- 5
-type$ -- 3
+type$ -- 4
 warning$ -- 0
-while$ -- 11
-width$ -- 4
-write$ -- 51
+while$ -- 16
+width$ -- 5
+write$ -- 62
 (There were 3 warnings)

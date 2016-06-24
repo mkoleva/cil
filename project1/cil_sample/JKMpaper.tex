@@ -104,11 +104,11 @@ We first build an RBM with 5000 visible units $v^k_i$, for $k\in\{1,\dots,5\}$ a
 
 The probability that a given unit is turned on (i.e. its associated state is 1) is a logistic function of the states of the units it is connected to. In our case we have
 \[
-	p(v^k_i=1|h)=\frac{\exp(b^k_i+\sum_{j=1}^L h_jW^k_{ij})}{\sum_{l=1}^{5}\exp(b^l_i+\sum_{j=1}^{L}h_jW^l_{ij})}
+p(v^k_i=1|h)=\frac{\exp(b^k_i+\sum_{j=1}^L h_jW^k_{ij})}{\sum_{l=1}^{5}\exp(b^l_i+\sum_{j=1}^{L}h_jW^l_{ij})}
 \]
 and
 \[
-	p(h_j=1|V)=\frac{1}{1+\exp(-b_j-\sum_{i=1}^{1000}\sum_{k=1}^{5}v^k_iW^k_{ij})}.
+p(h_j=1|V)=\frac{1}{1+\exp(-b_j-\sum_{i=1}^{1000}\sum_{k=1}^{5}v^k_iW^k_{ij})}.
 \]
 
 To train our RBM, we divide the users into small batches. For each user $u$ in a batch, we set $v^k_i=1$ if and only if user $u$ gave rating $k$ to film $i$. We then compute $p_j=p(h_j=1|V)$ when $V$ is set according to each of the users in the batch and record $v^k_i$ and $p_j$ for each triple $(i,j,k)$.
@@ -123,13 +123,13 @@ After going through each batch, we update the weights and biases. The learning r
 \[
 \Delta b_j = \lambda(<h_j>^+-<h_j>^-),
 \]
-where $\lambda$ is the learning rate, $<v^k_ih_j>^+$ is the average (over all users in the batch) of $v^k_i\cdot p_j$, $<v^k_i>^+$ is the average of $v^k_i$ and $<h_j>^+$ is the average of $p_j$. Furthermore, $<v^k_i>^-$ and analogous quantities correspond to averaged probabilities of finding the corresponding units turned on simultaneously  when the neural network is running at equilibrium. These quantities are hard to compute exactly, but they can be approximated via Gibbs sampling. This procedure is especially simple for RBM's, since each layer (hidden and visible) can be alternately updated in parallel. In our algorithm we use a single step of Gibbs sampling. Increasing the number of steps had no effect on the prediction score of our RBM.
+where $\lambda$ is the learning rate, $<v^k_ih_j>^+$ is the average (over all users in the batch) of $v^k_i\cdot p_j$, $<v^k_i>^+$ is the average of $v^k_i$ and $<h_j>^+$ is the average of $p_j$. Furthermore, $<v^k_i>^-$ and analogous quantities correspond to averaged probabilities of finding the corresponding units turned on simultaneously  when the neural network is running at equilibrium. These quantities are hard to compute exactly, but they can be approximated via Gibbs sampling (see \cite{H02}). This procedure is especially simple for RBM's, since each layer (hidden and visible) can be alternately updated in parallel. In our algorithm we use a single step of Gibbs sampling. Increasing the number of steps had no effect on the prediction score of our RBM.
 
 Note that we train only a single RBM. In \cite{SMH07}, the method presented consists of building a different RBM for each user, which all share the same weights and biases. In particular, they keep only connections from hidden units to visible units corresponding to observed ratings of a particular user.
 
 The prediction algorithm is the same in our method and in \cite{SMH07} and \cite{L10}. Namely, for a fixed user $u$, we set $v^k_i=1$ if and only if user $u$ ranked film $i$ with rating $k$. We then compute $\hat{p}_j=p(h_j=1|V)$ for $j=1,\dots, L$. If we want to predict the rating of film $i$, we compute
 \[
-	p(v^k_i=1|\hat{p})=\frac{\exp(b^k_i+\sum_{j=1}^L \hat{p}_jW^k_{ij})}{\sum_{l=1}^{5}\exp(b^l_i+\sum_{j=1}^{L}\hat{p}_jW^l_{ij})},
+p(v^k_i=1|\hat{p})=\frac{\exp(b^k_i+\sum_{j=1}^L \hat{p}_jW^k_{ij})}{\sum_{l=1}^{5}\exp(b^l_i+\sum_{j=1}^{L}\hat{p}_jW^l_{ij})},
 \]
 for $k=1,\dots, 5$. This yields a probability distribution over the possible ratings for movie $i$. Our prediction is 
 \[
@@ -139,17 +139,32 @@ for $k=1,\dots, 5$. This yields a probability distribution over the possible rat
 
 We make use of the built-in BernoulliRBM algorithm in sklearn to create our RBM and train it. Furthermore, we modified the source code to add an heuristic for the learning rate of the RBM, which improved its performance.
 
-%First, we build a different RBM for each user. Given a user $u$, we construct a binary-valued $5\times 1000$ matrix $V=\{v_{ki}\}$, such that $v_{ki}=1$ if and only if user $u$ rated film $i$ with rating $k$. Missing ratings for $u$ then correspond to all-zero columns in $V$. To each entry $v_{ki}$ in a column of $V$ corresponding to an observed rating we associate a visible unit in the RBM, which we also denote by $v_{ki}$ for simplicity. The binary value associated with unit $v_{ki}$ is initially set to be the value of entry $v_{ki}$ in $V$. Furthermore, we add $F$ hidden units $h_1,\dots,h_F$ to the RBM, where $F$ is a parameter which we set, and which is the same for all users. Finally, for each hidden unit $h_j$ we add connections to every visible unit in the RBM.
+\subsubsection*{\textbf{User-based $k$-Nearest Neighbors}} User based neighborhood methods are considered one of the most intuitive methods for collaborative filtering. It consists of two steps. First, the algorithm identifies a subset of users $N(u)$ of size $k$ who share a similar taste with a certain user $u$. Second, In order to predict the rating of user $u$ for a particular movie $m$, the ratings of users in $N(u)$ who have rated movie $m$ are aggregated according to their similarity measure with user $u$ to estimate the rating of user $u$ to movie $m$. The similarity measure, which according to literature [xxx see msc thesis] was found to be the most accurate was the Pearson correlation measure. We denote the Pearson correlation between two users $u_1$ and $u_2$ by $w(u_1, u_2)$ and it is calculated as follows:
+\begin{equation} \label{eqn:pearson}
+\frac{\sum_{i \in C} (R(u_1, i) - \overline{R}_C(u_1))\cdot(R(u_2, i) - \overline{R}_C(u_2))}{\sqrt{\sum_{i \in C} (R(u_1, i) - \overline{R}_C(u_1))^2} \sqrt{\sum_{i \in C} (R(u_2, i) - \overline{R}_C(u_2))^2}}
+\end{equation}
 
+$C$ in the above equation is the set of co-rated items between users $u_1$ and $u_2$. $R(u,i)$ is the rating of user $u$ to movie $i$. $\overline{R}_C(u)$ is the average rating of user $u$ on the set of movies $C$. The higher the correlation, the more similar the two users $u_1$ and $u_2$. We also have to introduce another similarity measure named cosine-based similarity for reasons that will be apparent shortly. Cosine-based similarity computes the cosine of the angle between the two vectors corresponding to the co-rated items of two users. Each user $u_1$ and $u_2$ is represented by a vector of ratings of movies in the set $C$ of co-rated movies. Next we measure the cosine of the angle between these two vectors. The equation is as follows:
+\begin{equation}
+\frac{\overrightarrow{R_C}(u_1) \cdot {\overrightarrow{R_C}(u_2)}}{\|R_C(u_1)\| \|R_C(u_2)\|}
+\end{equation}
+The problem with such measure is that it does not take into account the fact that different users might have different scales for ratings. One user might consider a rating 3 as a high one and another user might consider a rating 3 to be low. Adjusting the cosine based similarity measure by subtracting the average of a user from all its ratings is surprisingly the same as the Pearson correlation measure [according to ...]. We introduced that measure since its implementation is already present in sklearn and allow for faster computation of the weight between different users. So we centered the ratings by subtracting the mean of all users from there respective ratings and used the built-in sklearn "pairwise\_distances" function using the cosine metric to compute the weights. After calculating the weights defining how similar two users are for all pairs of users. The best $k$ is chosen by calculating the error of the algorithm on a validation set for different values of $k$. Afterwards, to predict the unknown rating of a user $u$ for a particular movie $i$, we compute an averaged weighted sum of the ratings of the $k$ nearest neighbors to user $u$ as follows:
+\begin{equation} \label{eqn:predict_user_based}
+R(u,i) = \overline{R}(u) + \frac{\sum_{u_k \in N(u)} w(u,u_k)(R(u_k,i) - \overline{R}(u_k))}{\sum_{u_k \in N(u)} w(u,u_k)}
+\end{equation}
+where $N(u)$ is the set of the most similar $k$ users.
+\\
 
-\subsubsection*{\textbf{User-based $k$-Nearest Neighbors}} Find the top k most similar users using a Pearson distance metric. The rating is the weighted average of the top k user\'s rating for the film.
-
-\subsubsection*{\textbf{Item-based $k$-Nearest Neighbors}}  Calculate the similarity between the films a user has already rated and the film in question. The predicted rating is then a weighted average of their ratings using the similarities as weights.
+\subsubsection*{\textbf{Item-based $k$-Nearest Neighbors}}  The item based kNN is considered to be the dual approach of the user based approach discussed above. Rather than finding similar users, the algorithm finds similar movies based on the ratings of all users. As above, a similarity measure such as the Pearson correlation is used to assess the similarity between each pair of movies. The set of users who rated movies $i$ and $j$ are used to measure as two vectors and the correlation is measured between them in a similar fashion as shown in equation (\ref{eqn:pearson}). in order to predict the rating of user $u$ for movie $i$, This is computed as follows:
+\begin{equation}
+R(u,i) = \overline{R}(i) + \frac{\sum_{j \in k\_R(u)} w(i,j)(R(u,j) - \overline{R}(j))}{\sum_{j \in k\_R(u)} w(i,j)}
+\end{equation}
+where $\overline{R}(i)$ is the average rating of movie $i$. $k\_R(u)$ is a set of movies for which we know the rating of user $u$. $w(i,j)$ is the similarity measure of movie $i$ and movie $j$. We can choose the size of the set $k\_R$ as we wish. 
 
 \subsection{The bold driver heuristic} 
-One of the biggest boosts to our score came from incorporating the bold driver heuristic for the learning rate in both SGD and RBM. This technique works as follows: Suppose we start with learning rate $\lambda$. After each epoch we compute the current error on the validation set and compare it with the error of the previous epoch. If the error increased from one epoch to the other, we decrease $\lambda$ to $d\lambda$, where $d\in[0,1]$ is a parameter we must set. On the other hand, if the error decreased, we increase $\lambda$ to $(1+c)\lambda$, where $c\geq 0$ is a parameter we must also set. Intuitively, the bold driver heuristic speeds up the convergence when we are going in the right direction and brakes quite sharply when we have missed a minimum and must turn around, so we do not miss it again by much. Thus, the bold driver heuristic adapts the learning rate to the surface we are trying to maneuver.
+One of the biggest boosts to our score came from incorporating the bold driver heuristic for the learning rate in both SGD and RBM. This technique works as follows: Suppose we start with learning rate $\lambda$. After each epoch we compute the current error on the validation set and compare it with the error of the previous epoch. If the error increased from one epoch to the other, we decrease $\lambda$ to $d\lambda$, where $d\in[0,1]$ is a parameter we must set. On the other hand, if the error decreased, we increase $\lambda$ to $(1+c)\lambda$, where $c\geq 0$ is a parameter we must also set. Intuitively, the bold driver heuristic speeds up the convergence when we are going in the right direction and breaks quite sharply when we have missed a minimum and must turn around, so we do not miss it again by much. Thus, the bold driver heuristic adapts the learning rate to the surface we are trying to maneuver.
 
-By playing with the parameters $\lambda$, $c$, and $d$, we can increase the performance of our methods significantly. In our case, for SGD, we obtained our best scores by setting $\lambda=0.001$, $c=0.05$, and $d=0.7$.
+By playing with the parameters $\lambda$, $c$ and $d$ we can increase the performance of our methods significantly. In our case, for SGD, we obtained our best scores by setting $\lambda=0.001$, $c=0.05$, and $d=0.7$.
 
 It is interesting to note that usual implementations of the bold driver heuristic also erase an update when it increases the error. In our implementation we opted to keep all such updates. Through experimentation we came to the conclusion that erasing ``bad" updates did not lead to any increase of performance for our methods. {\color{red} Should we test this further?}
 

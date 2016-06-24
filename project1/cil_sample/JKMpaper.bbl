@@ -37,4 +37,9 @@ G.~Louppe, ``Collaborative filtering: Scalable approaches using restricted
   boltzmann machines,'' Master's thesis, Universit{\'e} de Li{\`e}ge,​
   Li{\`e}ge,​​ Belgique, 2010.
 
+\bibitem{H02}
+G.~E. Hinton, ``Training products of experts by minimizing contrastive
+  divergence,'' \emph{Neural computation}, vol.~14, no.~8, pp. 1771--1800,
+  2002.
+
 \end{thebibliography}
