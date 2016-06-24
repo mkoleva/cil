@@ -98,13 +98,24 @@ The approximation should be much more representative of the data as it only uses
 
 RBM's are neural networks consisting of a layer of visible units and a layer of hidden units. Each unit has a stochastic binary random variable associated with it. There may be undirected connections between hidden and visible units, but no hidden-hidden or visible-visible connections are allowed. Thus, an RBM takes the form of a bipartite graph, where each layer corresponds to a different bipartition. These networks are a restricted version of Boltzmann machines (hence the name), introduced in \cite{AHS85}.
 
-Recently, RBM's have found applications in collaborative filtering, as illustrated in \cite{SMH07}. Our method is based on this paper, although there are some differences.
+Recently, RBM's have found applications in collaborative filtering, as illustrated in \cite{SMH07}. A very nice overview of RBM's for collaborative filtering can be found in \cite{L10}. Our approach is based on these two works, although there are some differences.
 
-We first build an RBM with 5000 visible units $v^k_i$, for $k\in\{1,\dots,5\}$ and $i\in\{1,\dots,1000\}$, and $F$ hidden units $h_1,\dots, h_F$, where $F$ is a hyperparameter of the algorithm. Furthermore, for each hidden unit $h_j$ we add connections to every visible unit $v^k_i$. Each connection between $h_j$ and $v^k_i$ has an associated weight $W^k_{ij}$. For each $(i,j,k)$ triple, the initial value of $W^k_{ij}$ is sampled from a zero-mean normal distribution with small variance.
+We first build an RBM with 5000 visible units $v^k_i$, for $k\in\{1,\dots,5\}$ and $i\in\{1,\dots,1000\}$, and $L$ hidden units $h_1,\dots, h_L$, where $L$ is a hyper-parameter of the algorithm. Furthermore, for each hidden unit $h_j$ we add connections to every visible unit $v^k_i$. Each connection between $h_j$ and $v^k_i$ has an associated weight $W^k_{ij}$. Each hidden unit $h_j$ has an associated bias $b_j$ and each visible unit $v^k_i$ has an associated bias $b^k_i$. Finally, each unit $h_j$ has an associated binary state $s_j$ and each unit $v^k_i$ has an associated binary state $s^k_i$.
+
+The probability that a given unit is turned on (i.e. its associated state is 1) is a logistic function of the states of the units it is connected to. In our case we have
+\[
+	p(s^k_i=1|h)=\frac{\exp(b^k_i+\sum_{j=1}^L s_jW^k_{ij})}{\sum_{l=1}^{5}\exp(b^l_i+\sum_{j=1}^{L}s_jW^l_{ij})}
+\]
+and
+\[
+	p(s_j=1|V)=\frac{1}{1+\exp(-b_j-\sum_{i=1}^{1000}\sum_{k=1}^{5}s^k_iW^k_{ij})}
+\]
 
 To train our RBM, we divide the users into small batches
 
-Note that we train only a single RBM by feeding it users' data vectors in batches, and then updating the weights. In \cite{SMH07}, the presented method consists of building a different RBM for each user, which all share a global weight matrix. The observed ratings of each user are then used to train its associated RBM. After going through a batch, the global weight matrix is updated. In the end we obtain an RBM with the same structure as the one which we get through our method (i.e. with connections between every hidden unit and every visible unit). The prediction algorithm is the same in our method and in \cite{SMH07}.
+Note that we train only a single RBM by feeding it users' data vectors in batches, and then updating the weights. In \cite{SMH07}, the presented method consists of building a different RBM for each user, which all share the same weights and biases. The observed ratings of each user are then used to train its associated RBM. After going through a batch, the global weights and biases are updated. In the end we obtain an RBM with the same structure as the one which we get through our method (i.e. with connections between every hidden unit and every visible unit). 
+
+The prediction algorithm is the same in our method and in \cite{SMH07} and \cite{L10}. Namely, we use the observed ratings of a user as the st
 
 We make use of the built-in BernoulliRBM algorithm in sklearn to create our RBM and train it. Furthermore, we modified the source code to add an heuristic for the learning rate of the RBM, which improved its performance.
 

@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015) (preloaded format=pdflatex 2015.11.27)  24 JUN 2016 00:21
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015) (preloaded format=pdflatex 2015.11.27)  24 JUN 2016 14:49
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -229,48 +229,51 @@ LaTeX Warning: Citation `AHS85' on page 2 undefined on input line 99.
 LaTeX Warning: Citation `SMH07' on page 2 undefined on input line 101.
 
 
-LaTeX Warning: Citation `SMH07' on page 2 undefined on input line 107.
+LaTeX Warning: Citation `L10' on page 2 undefined on input line 101.
 
 
-LaTeX Warning: Citation `SMH07' on page 2 undefined on input line 107.
+LaTeX Warning: Citation `SMH07' on page 2 undefined on input line 116.
 
-[2] <denoised_signal_1d.png, id=18, 578.16pt x 433.62pt>
+
+LaTeX Warning: Citation `SMH07' on page 2 undefined on input line 118.
+
+
+LaTeX Warning: Citation `L10' on page 2 undefined on input line 118.
+
+[2] <denoised_signal_1d.png, id=19, 578.16pt x 433.62pt>
 File: denoised_signal_1d.png Graphic file (type png)
 
 <use denoised_signal_1d.png>
-Package pdftex.def Info: denoised_signal_1d.png used on input line 147.
+Package pdftex.def Info: denoised_signal_1d.png used on input line 158.
 (pdftex.def)             Requested size: 243.91125pt x 182.93298pt.
 
-<local_wdenoised_1d.png, id=20, 578.16pt x 433.62pt>
+<local_wdenoised_1d.png, id=21, 578.16pt x 433.62pt>
 File: local_wdenoised_1d.png Graphic file (type png)
 
 <use local_wdenoised_1d.png>
-Package pdftex.def Info: local_wdenoised_1d.png used on input line 153.
+Package pdftex.def Info: local_wdenoised_1d.png used on input line 164.
 (pdftex.def)             Requested size: 243.91125pt x 182.93298pt.
-
-Underfull \vbox (badness 1540) has occurred while \output is active []
-
  [3 <./denoised_signal_1d.png> <./local_wdenoised_1d.png>]
 
-LaTeX Warning: Citation `anderson04' on page 4 undefined on input line 183.
+LaTeX Warning: Citation `anderson04' on page 4 undefined on input line 194.
 
 
-LaTeX Warning: Citation `wavelab' on page 4 undefined on input line 183.
+LaTeX Warning: Citation `wavelab' on page 4 undefined on input line 194.
 
 
-LaTeX Warning: Citation `kallet04methods' on page 4 undefined on input line 191
+LaTeX Warning: Citation `kallet04methods' on page 4 undefined on input line 202
 .
 
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <8> on input line 221.
+(Font)              <8> on input line 232.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <6> on input line 221.
-LaTeX Font Info:    Try loading font information for OT1+pcr on input line 244.
+(Font)              <6> on input line 232.
+LaTeX Font Info:    Try loading font information for OT1+pcr on input line 255.
 
 (/usr/local/texlive/2015/texmf-dist/tex/latex/psnfss/ot1pcr.fd
 File: ot1pcr.fd 2001/06/04 font definitions for OT1/pcr.
 )
-Underfull \hbox (badness 10000) in paragraph at lines 266--267
+Underfull \hbox (badness 10000) in paragraph at lines 277--278
 \OT1/ptm/m/n/10 This should give you a PDF doc-u-ment
  []
 
@@ -307,29 +310,30 @@ LaTeX Warning: There were undefined references.
 
  ) 
 Here is how much of TeX's memory you used:
- 2362 strings out of 493054
- 37565 string characters out of 6134759
- 105384 words of memory out of 5000000
- 5863 multiletter control sequences out of 15000+600000
+ 2363 strings out of 493054
+ 37570 string characters out of 6134759
+ 104384 words of memory out of 5000000
+ 5864 multiletter control sequences out of 15000+600000
  43619 words of font info for 79 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  38i,9n,23p,933b,293s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/local/texlive/2015/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/local/t
-exlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/te
-xlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/local/texl
-ive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texliv
-e/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/local/texlive/2
-015/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/20
-15/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/local/texlive/2015
-/texmf-dist/fonts/type1/urw/courier/ucrr8a.pfb></usr/local/texlive/2015/texmf-d
-ist/fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2015/texmf-dist/fonts/
-type1/urw/times/utmbi8a.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/urw
-/times/utmr8a.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/urw/times/utm
-ri8a.pfb>
-Output written on JKMpaper.pdf (5 pages, 259846 bytes).
+exlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/local/te
+xlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/tex
+live/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/local/texli
+ve/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive
+/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/local/texlive/20
+15/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/201
+5/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/local/texlive/2015/
+texmf-dist/fonts/type1/urw/courier/ucrr8a.pfb></usr/local/texlive/2015/texmf-di
+st/fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2015/texmf-dist/fonts/t
+ype1/urw/times/utmbi8a.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/urw/
+times/utmr8a.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/urw/times/utmr
+i8a.pfb>
+Output written on JKMpaper.pdf (5 pages, 271156 bytes).
 PDF statistics:
- 70 PDF objects out of 1000 (max. 8388607)
- 47 compressed objects within 1 object stream
+ 74 PDF objects out of 1000 (max. 8388607)
+ 50 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  11 words of extra memory for PDF output out of 10000 (max. 10000000)
 
