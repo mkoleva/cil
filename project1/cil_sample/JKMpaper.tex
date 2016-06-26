@@ -2,16 +2,17 @@
 
 %\usepackage{times}
 %\usepackage{balance}
+\usepackage{amsmath}
 \usepackage{url}
 \usepackage{graphicx}	% For figure environment
 \usepackage{color}
-
+\usepackage{breqn}
 
 \begin{document}
-\title{Writing Scientific Papers and Software}
+\title{Collaborative Filtering Project - JKM Team report}
 
 \author{
-  Cheng Soon Ong\\
+  Karim Bahaa Rushdi Labib\\
   Department of Computer Science, ETH Zurich, Switzerland
 }
 
@@ -34,9 +35,9 @@
 
 Recommender systems have gained increasing popularity in the last 10-15 years, mainly due to their immediate market applications. The huge selection of products online offer retailers the opportunity to attract a wide-range of clients. However, it also means that users can no longer be expected to browse through everything available until they find the film, song or book they like the most. Good recommendations are key to both making the correct products available to the appropriate audience, but also to creating a unique, personalised experience which will attract new clients. These ideas are fundamental for many leading online businesses [ref netflix, ref amazon, ref something else].
 
-In this paper, we concentrate on the collaborative-filtering approach to recommender systems, which relies on previous user experiences (ratings), rather than pre-defined user profile [some ref about the two types]. We use the Netflix dataset with ratings from 10000 users on 1000 films, which has driven a lot of the innovation in the area and allows us to compare our solutions to the state-of-the-art. 
+In this paper, we concentrate on the collaborative-filtering approach to recommender systems, which relies on previous user experiences (ratings), rather than pre-defined user profile [some ref about the two types]. We use a dataset with ratings from 10000 users on 1000 films.
 
-Our main contributions are two-fold: we first combine latent factor models (SVD, SGD SVD, RBM) and neighbourhood models (user- and item-based kNN) to produce a robust recommender system which optimises the RMSE of predicted ratings on X[how many films] from Blaa to Bllaa. Second, we show that the addition of a more complex learning rate heuristic on stochastic gradient descent and restricted Boltzmann machines improves the score significantly, to X. 
+Our main contributions are two-fold: we first combine latent factor models (Singular Value Decomposition (\textbf{SVD}), Stochastic Gradient Descent for matrix factorization (\textbf{SGD}), Restricted Boltzmann Machines (\textbf{RBM}) and neighbourhood models (user- and item-based k-Nearest Neighbors (\textbf{kNN}) to produce a robust recommender system which optimizes the Root Mean Sqaured Error (RMSE) of predicted ratings on X[how many films] from Blaa to Bllaa. Second, we show that the addition of a more complex learning rate heuristic on SGD and RBM improves the score significantly, to X. 
 
 In Section \ref{sec:models} we describe the idea and the implementation of our systems. We present the results from the local evaluation of the models and from the validation set on Kaggle in Section \ref{sec:results}. Finally, in Section \ref{sec:discussion} we interpret the improvements we achieved and discuss potential weaknesses and future work.
 
@@ -44,7 +45,7 @@ In Section \ref{sec:models} we describe the idea and the implementation of our s
 
 \section{Models and Methods}
 \label{sec:models}
-All work is done on the Netflix dataset provided for the project. The data is a collection of \textit{(user, film, rating)} tuples. For training, we have 1176953 ratings available. The online evaluation on Kaggle is performed on another 1176953 ratings. We were able to see the prediction accuracy on 50\% of that online dataset and our goal was to improve that as it is believed to be very similar to the other 50\% of the data.
+All work is done on the dataset provided for the project. The data is a collection of \textit{(user, film, rating)} tuples. For training, we have 1176953 ratings available. The online evaluation on Kaggle is performed on another 1176953 ratings. We were able to see the prediction accuracy on 50\% of that online dataset and our goal was to improve that as it is believed to be very similar to the other 50\% of the data.
 \subsection{Data Model}
 
 The provided dataset can be most naturally seen as an $N\times M$ matrix, with $N$ being the number of users ($N=~10000$), and $M$ the number of films ($M=1000$). If every user had rated every film, the matrix would have $10^7$ entries. However, in this realistic scenario, this is not the case and our matrix is quite sparse. From here stems the difficulty of the problem - we attempt to predict more than a million ratings based on a very incomplete dataset. 
@@ -61,9 +62,9 @@ There are two main views which yield different methods for tackling this problem
 
 These models attempt to explain film ratings by users as being influenced by a set of unknown (also called \emph{latent}) factors.
 
-One approach characterizes users and films by low-dimensional feature vectors in a latent feature space. The rating of a given film by a given user is then modeled by the dot product between the corresponding user and film feature vectors. The different methods then aim to infer the underlying film and user feature vectors from the available ratings, most successfully through matrix factorization techniques and approximations. As examples of this approach, we discuss Singular Value Decomposition and Stochastic Gradient Descent.
+One approach characterizes users and films by low-dimensional feature vectors in a latent feature space. The rating of a given film by a given user is then modeled by the dot product between the corresponding user and film feature vectors. The different methods then aim to infer the underlying film and user feature vectors from the available ratings, most successfully through matrix factorization techniques and approximations. As examples of this approach, we discuss SVD and SGD.
 
-It is also possible to model missing ratings through neural networks which are composed by visible and latent units. In particular, we discuss Restricted Boltzmann Machines. At a high level, for each user-film pair whose rating is missing, the neural network learns a probability distribution over the possible ratings (1 to 5) from the known ratings. The prediction is then simply the expected value of this distribution.
+It is also possible to predict missing ratings through neural networks which are composed by visible and latent units. In particular, we discuss RBM. At a high level, for each user-film pair whose rating is missing, the neural network learns a probability distribution over the possible ratings (1 to 5) from the known ratings. The prediction is then simply the expected value of this distribution.
 
 
 \subsubsection*{\textbf{Neighbourhood-based models}} Another approach to the collaborative filtering problem is to view the ratings as features of either the users (user-based) or the films (item-based). In the former case, a user A is represented as a sparse feature vector of their ratings and we would base our prediction on other users who have rated those films similarly. In the latter scenario, we would use the similarity between the new film and the films already rated by A to estimate the new rating. Each film is a feature vector of all users' ratings. We review an implementation of both in the next subsection.
@@ -71,28 +72,42 @@ It is also possible to model missing ratings through neural networks which are c
 \subsection{Algorithms}
 We investigated three algorithms which concentrate on solving the latent-factor model problem and two which work on the neighbourhood model:
 
-\subsubsection*{\textbf{Singular Value Decomposition (SVD)}} Given the latent factor model described above, the rating matrix is produced by the multiplication of the users matrix and films matrix which are all on the same feature space. The most natural way to infer the users and films representation is using a matrix factorisation approach so SVD comes directly to mind[some refs here]. The main issue is that SVD works on full matrices and as mentioned above, this is not the case. Hence, we need to impute the missing values before we can proceed. This introduces noise and leads to sup-optimal results. We hope to minimize the noise and the overfitting by looking for a low-rank ($k$) approximation of the rating matrix. 
-
-We experimented with input strategies, different number of latent features and values for $k$ using a local validation set. We concluded that the best results were accomplished using XX features and Equation \ref{eq:imputation} for imputation:
+\subsubsection*{\textbf{SVD}} Given the latent factor model described above, the rating matrix is assumed to be produced by the multiplication of a users' matrix and the films' matrix which are all on the same feature space, namely that consisting of the latent factors. The most natural way to infer the users and films representation is using a matrix factorization approach so SVD comes directly to mind \cite{Koren09matrixfactorization}. The main issue is that SVD works on full matrices and as mentioned above, this is not the case. Hence, we need to impute the missing values before we can proceed. We chose the following imputation strategy for a missing rating $r_{ij}$
 
 \begin{equation}
-R_{ij}= 0.5\cdot \textnormal{AvgUser}[i] + 0.5\cdot \textnormal{AvgFilm}[j]
+r_{ij}= \lambda \textnormal{AvgUser}[i] + (1 - \lambda) \textnormal{AvgFilm}[j]
 \label{eq:imputation}
 \end{equation}
+where $\lambda \in [0,1]$, $\textnormal{AvgUser}[i]$ and $\textnormal{AvgFilm}[j]$ are the average ratings of user $i$ and movie $j$ respectively. Imputation in general introduces noise and leads to sup-optimal results. We hope to minimize the noise and over-fitting by looking for a low-rank ($k$) approximation of the rating matrix. 
 
-A missing rating of user $i$ for film $j$ is calculated as a linear combination of the average rating given by user $i$, $\textnormal{AvgUser}[i]$, and the average rating received by film $j$ from all other users, $\textnormal{AvgFilm}[j]$. If any of those values is missing due to a film with no ratings or user with no rated films, the other value is used.
+We experimented with different values for $\lambda$ and numbers of latent features. We concluded that the lowest RMSE on a probe set was accomplished using 13 features and $\lambda = 0.25$
 
-We have used the Numpy built-in SVD algorithm for this. Despite the optimization strategies, we expect the results achieved with SVD to be suboptimal due to the large number of missing values, and the inaccuracy introduced by the imputation of those values. We use this algorithm as a baseline and we try to improve it with better strategies for matrix factorization or alternative approaches of finding the latent factor representation.
+Despite the optimization strategies, we expect the results achieved with SVD to be suboptimal due to the large number of missing values, and the inaccuracy introduced by the imputation of those values. We use this algorithm as a baseline and we try to improve it with better strategies for matrix factorization or alternative approaches of finding the latent factor representation.
 
-\subsubsection*{\textbf{Stochastic Gradient Descent (SGD) for SVD}} The main idea of the algorithm is to avoid the need of filling in the missing values in the $k$-rank approximation of the rating matrix. 
+\subsubsection*{\textbf{SGD}} The main idea of the algorithm is to avoid the need of filling in the missing values in the rating matrix. 
 
-Instead of doing the standard SVD which requires a full matrix, we use only the available ratings in a Stochastic Gradient Descent method. The function we minimize is :
+Instead of doing the standard SVD which requires a full matrix, we use only the available ratings in a Stochastic Gradient Descent method. The regularized (to avoid overfitting) objective function to minimize is as follows:
 
 \begin{equation}
-equation for SGD
+\begin{split}
+\min_{p,q,b_u,b_m} \sum_{(i,j) \in T} &(r_{ij} - (\mu + b_u(i) + b_m(j) + p_i^T \cdot q_j))^2 \\ &+ \lambda(\lVert p_i \rVert^2 + \lVert q_j \rVert^2 + b_u(i)^2 + b_m(j)^2) 
+\end{split}
 \end{equation}
 
-The approximation should be much more representative of the data as it only uses real ratings. The algorithm was very sensitive to hyper-parameters so those were optimized on both a local validation set and the online Kaggle score. 
+$T$ is the set of observed ratings (pairs $(i,j)$ of user $i$ rating movie $j$), $r_{ij}$ is the known rating of user $i$ to movie $j$, $b_u$ and $b_m$ are the bias vectors of users and movies respectively. It has been pointed out in \cite{Koren09matrixfactorization} that the bias vectors lead to higher accuracy. The intuition being that the variation in the observed ratings can not be only explained by the latent vectors of users and movies but also need to consider effects and biases specific for users and movies (i.e some users tend to rate higher than others). In order to predict an unknown rating of user $i$ to movie $j$
+\begin{equation}
+	r_{pred} = \mu + b_u(i) + b_m(j) + p_i^T\cdot q_j
+\end{equation}
+The parameters are modified during the algorithm by looping through all ratings in the training set for several epochs. For each data point $(i,j)$, the magnitudes of the corresponding parameters are updated by a magnitude proportional to a learning rate $\gamma$ in the opposite direction to the gradient of the objective function as follows:
+\begin{equation}
+\begin{split}
+	p_i &\leftarrow p_i + \gamma(e_{ij}q_j - \lambda p_i) \\
+	q_j &\leftarrow q_j + \gamma(e_{ij}p_i - \lambda q_j) \\
+	b_u(i) &\leftarrow \gamma(e_{ij} - \lambda b_u(i)) \\
+	b_m(j) &\leftarrow \gamma(e_{ij} - \lambda b_m(j)) \\
+\end{split}
+\end{equation}
+The approximation should be much more representative of the data as it only uses known ratings. The algorithm was very sensitive to hyper-parameters so those were optimized on both a local validation set and the online Kaggle score.
 
 \subsubsection*{\textbf{Restricted Boltzmann Machines (RBM's)}}
 
@@ -139,20 +154,16 @@ for $k=1,\dots, 5$. This yields a probability distribution over the possible rat
 
 We make use of the built-in BernoulliRBM algorithm in sklearn to create our RBM and train it. Furthermore, we modified the source code to add an heuristic for the learning rate of the RBM, which improved its performance.
 
-\subsubsection*{\textbf{User-based $k$-Nearest Neighbors}} User based neighborhood methods are considered one of the most intuitive methods for collaborative filtering. It consists of two steps. First, the algorithm identifies a subset of users $N(u)$ of size $k$ who share a similar taste with a certain user $u$. Second, In order to predict the rating of user $u$ for a particular movie $m$, the ratings of users in $N(u)$ who have rated movie $m$ are aggregated according to their similarity measure with user $u$ to estimate the rating of user $u$ to movie $m$. The similarity measure, which according to literature [xxx see msc thesis] was found to be the most accurate was the Pearson correlation measure. We denote the Pearson correlation between two users $u_1$ and $u_2$ by $w(u_1, u_2)$ and it is calculated as follows:
+\subsubsection*{\textbf{User-based $k$-Nearest Neighbors}} User based neighborhood methods are considered one of the most intuitive methods for collaborative filtering. It consists of two steps. First, the algorithm computes the similarity between different users through some similarity measure. Second, to predict the rating of user $u$ for a particular movie $m$, the ratings of the most similar $k$ userswho have rated movie $m$ are aggregated according to their similarity measure with user $u$ to estimate the required rating. The similarity measure, which according to \cite{L10} was found to be the most accurate was the Pearson correlation measure. We denote the Pearson correlation between two users $u_1$ and $u_2$ by $w(u_1, u_2)$ and it is calculated as follows:
 \begin{equation} \label{eqn:pearson}
-\frac{\sum_{i \in C} (R(u_1, i) - \overline{R}_C(u_1))\cdot(R(u_2, i) - \overline{R}_C(u_2))}{\sqrt{\sum_{i \in C} (R(u_1, i) - \overline{R}_C(u_1))^2} \sqrt{\sum_{i \in C} (R(u_2, i) - \overline{R}_C(u_2))^2}}
+\frac{\sum_{j \in C} (R(u_1, j) - \overline{R}_C(u_1))\cdot(R(u_2, j) - \overline{R}_C(u_2))}{\sqrt{\sum_{j \in C} (R(u_1, j) - \overline{R}_C(u_1))^2} \sqrt{\sum_{j \in C} (R(u_2, j) - \overline{R}_C(u_2))^2}}
 \end{equation}
 
-$C$ in the above equation is the set of co-rated items between users $u_1$ and $u_2$. $R(u,i)$ is the rating of user $u$ to movie $i$. $\overline{R}_C(u)$ is the average rating of user $u$ on the set of movies $C$. The higher the correlation, the more similar the two users $u_1$ and $u_2$. We also have to introduce another similarity measure named cosine-based similarity for reasons that will be apparent shortly. Cosine-based similarity computes the cosine of the angle between the two vectors corresponding to the co-rated items of two users. Each user $u_1$ and $u_2$ is represented by a vector of ratings of movies in the set $C$ of co-rated movies. Next we measure the cosine of the angle between these two vectors. The equation is as follows:
-\begin{equation}
-\frac{\overrightarrow{R_C}(u_1) \cdot {\overrightarrow{R_C}(u_2)}}{\|R_C(u_1)\| \|R_C(u_2)\|}
-\end{equation}
-The problem with such measure is that it does not take into account the fact that different users might have different scales for ratings. One user might consider a rating 3 as a high one and another user might consider a rating 3 to be low. Adjusting the cosine based similarity measure by subtracting the average of a user from all its ratings is surprisingly the same as the Pearson correlation measure [according to ...]. We introduced that measure since its implementation is already present in sklearn and allow for faster computation of the weight between different users. So we centered the ratings by subtracting the mean of all users from there respective ratings and used the built-in sklearn "pairwise\_distances" function using the cosine metric to compute the weights. After calculating the weights defining how similar two users are for all pairs of users. The best $k$ is chosen by calculating the error of the algorithm on a validation set for different values of $k$. Afterwards, to predict the unknown rating of a user $u$ for a particular movie $i$, we compute an averaged weighted sum of the ratings of the $k$ nearest neighbors to user $u$ as follows:
+$C$ being the set of co-rated items between users $u_1$ and $u_2$. $R(u,j)$ is the rating of user $u$ to movie $j$. $\overline{R}_C(u)$ is the average rating of user $u$ on the set of movies $C$. The higher the correlation, the more similar the two users $u_1$ and $u_2$. The pearson correlation can be shown \cite{L10} to be equivalent to the cosine based similarity of the centered rating matrix (averages of users are subtracted from the corresponding ratings). This allows for easier and faster computation of correlation between every pair of users using sklearn. The best $k$ is chosen by calculating the error of the algorithm on a validation set for different values of $k$. Finally, to predict the unknown rating of a user $u$ for a particular movie $i$, we compute an averaged weighted sum of the ratings of the $k$ nearest neighbors to user $u$ as follows:
 \begin{equation} \label{eqn:predict_user_based}
 R(u,i) = \overline{R}(u) + \frac{\sum_{u_k \in N(u)} w(u,u_k)(R(u_k,i) - \overline{R}(u_k))}{\sum_{u_k \in N(u)} w(u,u_k)}
 \end{equation}
-where $N(u)$ is the set of the most similar $k$ users.
+where $N(u)$ is the set of the most similar $k$ users who rated item $i$.
 \\
 
 \subsubsection*{\textbf{Item-based $k$-Nearest Neighbors}}  The item based kNN is considered to be the dual approach of the user based approach discussed above. Rather than finding similar users, the algorithm finds similar movies based on the ratings of all users. As above, a similarity measure such as the Pearson correlation is used to assess the similarity between each pair of movies. The set of users who rated movies $i$ and $j$ are used to measure as two vectors and the correlation is measured between them in a similar fashion as shown in equation (\ref{eqn:pearson}). in order to predict the rating of user $u$ for movie $i$, This is computed as follows:
