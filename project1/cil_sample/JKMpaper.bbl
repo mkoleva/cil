@@ -21,6 +21,10 @@
 \providecommand{\BIBdecl}{\relax}
 \BIBdecl
 
+\bibitem{Koren09matrixfactorization}
+Y.~Koren, R.~Bell, and C.~Volinsky, ``Matrix factorization techniques for
+  recommender systems,'' 2009.
+
 \bibitem{AHS85}
 D.~H. Ackley, G.~E. Hinton, and T.~J. Sejnowski, ``A learning algorithm for
   boltzmann machines,'' \emph{Cognitive science}, vol.~9, no.~1, pp. 147--169,

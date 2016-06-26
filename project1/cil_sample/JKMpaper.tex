@@ -9,12 +9,28 @@
 \usepackage{breqn}
 
 \begin{document}
-\title{Collaborative Filtering Project - JKM Team report}
+\title{United We Stand:\\ Combinations for Collaborative Filtering}
 
 \author{
-  Karim Bahaa Rushdi Labib\\
-  Department of Computer Science, ETH Zurich, Switzerland
+	\IEEEauthorblockN{Mariyana Koleva}
+	\IEEEauthorblockA{
+		ETH Zurich\\
+		Switzerland\\
+		Email: ...@student.ethz.ch} 
+	\and
+	\IEEEauthorblockN{Karim Labib}
+	\IEEEauthorblockA{
+		ETH Zurich\\
+		Switzerland\\
+		Email: labibk@student.ethz.ch} 
+	\and
+	\IEEEauthorblockN{Jo\~{a}o Louren\c{c}o Ribeiro}
+	\IEEEauthorblockA{
+		ETH Zurich\\
+		Switzerland\\
+		Email: ljoao@student.ethz.ch} 
 }
+
 
 \maketitle
 
@@ -104,7 +120,7 @@ The parameters are modified during the algorithm by looping through all ratings 
 	p_i &\leftarrow p_i + \gamma(e_{ij}q_j - \lambda p_i) \\
 	q_j &\leftarrow q_j + \gamma(e_{ij}p_i - \lambda q_j) \\
 	b_u(i) &\leftarrow \gamma(e_{ij} - \lambda b_u(i)) \\
-	b_m(j) &\leftarrow \gamma(e_{ij} - \lambda b_m(j)) \\
+	b_m(j) &\leftarrow \gamma(e_{ij} - \lambda b_m(j)) 
 \end{split}
 \end{equation}
 The approximation should be much more representative of the data as it only uses known ratings. The algorithm was very sensitive to hyper-parameters so those were optimized on both a local validation set and the online Kaggle score.
@@ -118,39 +134,33 @@ Recently, RBM's have found applications in collaborative filtering, as illustrat
 We first build an RBM with 5000 visible units $v^k_i$, for $k\in\{1,\dots,5\}$ and $i\in\{1,\dots,1000\}$, and $L$ hidden units $h_1,\dots, h_L$, where $L$ is a hyper-parameter of the algorithm. Furthermore, for each hidden unit $h_j$ we add connections to every visible unit $v^k_i$. Each connection between $h_j$ and $v^k_i$ has an associated weight $W^k_{ij}$. Each hidden unit $h_j$ has an associated bias $b_j$ and each visible unit $v^k_i$ has an associated bias $b^k_i$. Finally, each unit can be in state 0 or 1.
 
 The probability that a given unit is turned on (i.e. its associated state is 1) is a logistic function of the states of the units it is connected to. In our case we have
-\[
-p(v^k_i=1|h)=\frac{\exp(b^k_i+\sum_{j=1}^L h_jW^k_{ij})}{\sum_{l=1}^{5}\exp(b^l_i+\sum_{j=1}^{L}h_jW^l_{ij})}
-\]
-and
-\[
-p(h_j=1|V)=\frac{1}{1+\exp(-b_j-\sum_{i=1}^{1000}\sum_{k=1}^{5}v^k_iW^k_{ij})}.
-\]
+\begin{equation}
+\begin{split}
+	p(v^k_i=1|h)&=\frac{\exp(b^k_i+\sum_{j=1}^L h_jW^k_{ij})}{\sum_{l=1}^{5}\exp(b^l_i+\sum_{j=1}^{L}h_jW^l_{ij})}\\
+	p(h_j=1|V)&=\frac{1}{1+\exp(-b_j-\sum_{i=1}^{1000}\sum_{k=1}^{5}v^k_iW^k_{ij})}.
+\end{split}
+\end{equation}
 
 To train our RBM, we divide the users into small batches. For each user $u$ in a batch, we set $v^k_i=1$ if and only if user $u$ gave rating $k$ to film $i$. We then compute $p_j=p(h_j=1|V)$ when $V$ is set according to each of the users in the batch and record $v^k_i$ and $p_j$ for each triple $(i,j,k)$.
 
 After going through each batch, we update the weights and biases. The learning rules are
-\[
-\Delta W^k_{ij}=\lambda(<v^k_ih_j>^+-<v^k_ih_j>^-)
-\]
-\[
-\Delta b^k_i = \lambda(<v^k_i>^+-<v^k_i>^-)
-\]
-\[
-\Delta b_j = \lambda(<h_j>^+-<h_j>^-),
-\]
-where $\lambda$ is the learning rate, $<v^k_ih_j>^+$ is the average (over all users in the batch) of $v^k_i\cdot p_j$, $<v^k_i>^+$ is the average of $v^k_i$ and $<h_j>^+$ is the average of $p_j$. Furthermore, $<v^k_i>^-$ and analogous quantities correspond to averaged probabilities of finding the corresponding units turned on simultaneously  when the neural network is running at equilibrium. These quantities are hard to compute exactly, but they can be approximated via Gibbs sampling (see \cite{H02}). This procedure is especially simple for RBM's, since each layer (hidden and visible) can be alternately updated in parallel. In our algorithm we use a single step of Gibbs sampling. Increasing the number of steps had no effect on the prediction score of our RBM.
+
+\begin{equation}
+\begin{split}
+W^k_{ij} &\leftarrow W^k_{ij} + \gamma(<v^k_ih_j>^+-<v^k_ih_j>^-)\\
+b^k_i &\leftarrow b^k_i + \gamma(<v^k_i>^+-<v^k_i>^-)\\
+b_j &\leftarrow b_j + \gamma(<h_j>^+-<h_j>^-),
+\end{split}
+\end{equation}
+where $\gamma$ is the learning rate, $<v^k_ih_j>^+$ is the average (over all users in the batch) of $v^k_i\cdot p_j$, $<v^k_i>^+$ is the average of $v^k_i$ and $<h_j>^+$ is the average of $p_j$. Furthermore, $<v^k_i>^-$ and analogous quantities correspond to averaged probabilities of finding the corresponding units turned on simultaneously  when the neural network is running at equilibrium. These quantities are hard to compute exactly, but they can be approximated via Gibbs sampling (see \cite{H02}). In our algorithm we use a single step of Gibbs sampling. Increasing the number of steps had no effect on the prediction score of our RBM.
 
 Note that we train only a single RBM. In \cite{SMH07}, the method presented consists of building a different RBM for each user, which all share the same weights and biases. In particular, they keep only connections from hidden units to visible units corresponding to observed ratings of a particular user.
 
 The prediction algorithm is the same in our method and in \cite{SMH07} and \cite{L10}. Namely, for a fixed user $u$, we set $v^k_i=1$ if and only if user $u$ ranked film $i$ with rating $k$. We then compute $\hat{p}_j=p(h_j=1|V)$ for $j=1,\dots, L$. If we want to predict the rating of film $i$, we compute
-\[
-p(v^k_i=1|\hat{p})=\frac{\exp(b^k_i+\sum_{j=1}^L \hat{p}_jW^k_{ij})}{\sum_{l=1}^{5}\exp(b^l_i+\sum_{j=1}^{L}\hat{p}_jW^l_{ij})},
-\]
-for $k=1,\dots, 5$. This yields a probability distribution over the possible ratings for movie $i$. Our prediction is 
-\[
-\sum_{k=1}^{5}k\cdot p(v^k_i=1|\hat{p}),
-\]
-(i.e. the expected value of the distribution).
+\begin{equation}
+	p(v^k_i=1|\hat{p})=\frac{\exp(b^k_i+\sum_{j=1}^L \hat{p}_jW^k_{ij})}{\sum_{l=1}^{5}\exp(b^l_i+\sum_{j=1}^{L}\hat{p}_jW^l_{ij})},
+\end{equation}
+for $k=1,\dots, 5$. This yields a probability distribution over the possible ratings for movie $i$. Our prediction is the expected value of this distribution, $\sum_{k=1}^{5}k\cdot p(v^k_i=1|\hat{p})$.
 
 We make use of the built-in BernoulliRBM algorithm in sklearn to create our RBM and train it. Furthermore, we modified the source code to add an heuristic for the learning rate of the RBM, which improved its performance.
 
@@ -173,9 +183,7 @@ R(u,i) = \overline{R}(i) + \frac{\sum_{j \in k\_R(u)} w(i,j)(R(u,j) - \overline{
 where $\overline{R}(i)$ is the average rating of movie $i$. $k\_R(u)$ is a set of movies for which we know the rating of user $u$. $w(i,j)$ is the similarity measure of movie $i$ and movie $j$. We can choose the size of the set $k\_R$ as we wish. 
 
 \subsection{The bold driver heuristic} 
-One of the biggest boosts to our score came from incorporating the bold driver heuristic for the learning rate in both SGD and RBM. This technique works as follows: Suppose we start with learning rate $\lambda$. After each epoch we compute the current error on the validation set and compare it with the error of the previous epoch. If the error increased from one epoch to the other, we decrease $\lambda$ to $d\lambda$, where $d\in[0,1]$ is a parameter we must set. On the other hand, if the error decreased, we increase $\lambda$ to $(1+c)\lambda$, where $c\geq 0$ is a parameter we must also set. Intuitively, the bold driver heuristic speeds up the convergence when we are going in the right direction and breaks quite sharply when we have missed a minimum and must turn around, so we do not miss it again by much. Thus, the bold driver heuristic adapts the learning rate to the surface we are trying to maneuver.
-
-By playing with the parameters $\lambda$, $c$ and $d$ we can increase the performance of our methods significantly. In our case, for SGD, we obtained our best scores by setting $\lambda=0.001$, $c=0.05$, and $d=0.7$.
+One of the biggest boosts to our score came from incorporating the bold driver heuristic for the learning rate in both SGD and RBM. This technique works as follows: Suppose we start with learning rate $\lambda$. After each epoch we compute the current error on the validation set and compare it with the error of the previous epoch. If the error increased from one epoch to the other, we decrease $\lambda$ to $d\lambda$, where $d\in[0,1]$ is a parameter we must set. On the other hand, if the error decreased, we increase $\lambda$ to $(1+c)\lambda$, where $c\geq 0$ is a parameter we must also set. Intuitively, the bold driver heuristic adapts the learning rate to the surface we are trying to maneuver.
 
 It is interesting to note that usual implementations of the bold driver heuristic also erase an update when it increases the error. In our implementation we opted to keep all such updates. Through experimentation we came to the conclusion that erasing ``bad" updates did not lead to any increase of performance for our methods. {\color{red} Should we test this further?}
 
