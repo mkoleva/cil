@@ -74,3 +74,75 @@ def compute_weight_matrix(rating_matrix, metric):
 def sort_indices_of_neighbors(weight_matrix):
     sorted_indices_of_neighbors = (-weight_matrix).argsort()
     return sorted_indices_of_neighbors
+
+
+def plotStuff():
+    import matplotlib.pyplot as plt
+
+    dataB = np.sqrt(np.load('data/sgd/error_vector_sgd_bold_driver.npy')/58847)
+    dataB2 = np.sqrt(np.load('data/sgd/error_vector_sgd_bold_driver_80.npy')/58847)
+    dataB3 = np.sqrt(np.load('data/sgd/error_vector_sgd_bold_driver_100.npy')/58847)
+    data2 = np.sqrt(np.load('data/sgd/error_vector_sgd_without_80.npy')/58847)
+    data = np.sqrt(np.load('data/sgd/error_vector_sgd_without.npy')/58847)
+    data3 = np.sqrt(np.load('data/sgd/error_vector_sgd_without_100.npy')/58847)
+
+
+    # with plt.style.context('fivethirtyeight'):
+
+    minBold40 = np.argmin(dataB)
+    minBold80 = np.argmin(dataB2)
+    minBold100 = np.argmin(dataB3)
+    min80 = np.argmin(data2)
+    min40 = np.argmin(data)
+    min100 = np.argmin(data3)
+
+
+    print np.argmin(dataB), min(dataB)
+    print np.argmin(dataB2), min(dataB2)
+    print np.argmin(dataB3), min(dataB3)
+
+    print np.argmin(data), min(data)
+    print np.argmin(data2), min(data2)
+    print np.argmin(data3), min(data3)
+
+    plt.xlabel('Epochs')
+    plt.ylabel('RMSE')
+
+    plt.plot(dataB, linestyle='-.', linewidth=2, label='BD c=40')
+    plt.plot(dataB2, linestyle='--', linewidth=2, label='BD c=80')
+    plt.plot(dataB3, linestyle=':', linewidth=2, label='BD c=100')
+    plt.plot(data, linestyle='-', linewidth=1, label='c=40')
+    plt.plot(data2, linestyle='-', linewidth=1, label='c=80')
+    plt.plot(data3, linestyle='-', linewidth=1, label='c=100')
+
+
+    plt.text(minBold80+1, 1.4, 'best BD80')
+    plt.text(minBold40+1, 1.4, 'best BD40')
+    plt.text(minBold100+1, 1.35, 'best BD100')
+    plt.text(min80+1, 1.35, 'best c80')
+    plt.text(min40+1, 1.31, 'best c40')
+    plt.text(min100+1, 1.33, 'best c100')
+
+
+    plt.axvline(x=minBold80, color='gray', alpha=0.7)
+    plt.axvline(x=minBold40, color='gray')
+    plt.axvline(x=minBold100, color='gray')
+    plt.axvline(x=min40, color='gray', alpha=0.7)
+    plt.axvline(x=min80, color='gray', alpha=0.7)
+    plt.axvline(x=min100, color='gray', alpha=0.7)
+
+    plt.legend(loc='upper left')
+
+    plt.show()
+
+    # for point1, point2 in zip(data, data2):
+    #     print str(point1) + '\t' + str(point2)
+
+
+
+if __name__=='__main__':
+    plotStuff()
+
+
+
+

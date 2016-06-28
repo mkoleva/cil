@@ -21,6 +21,15 @@
 \providecommand{\BIBdecl}{\relax}
 \BIBdecl
 
+\bibitem{amatriain2012netflix}
+X.~Amatriain and J.~Basilico, ``Netflix recommendations: beyond the 5 stars
+  (part 1),'' \emph{Netflix Tech Blog}, vol.~6, 2012.
+
+\bibitem{linden2003amazon}
+G.~Linden, B.~Smith, and J.~York, ``Amazon. com recommendations: Item-to-item
+  collaborative filtering,'' \emph{IEEE Internet computing}, vol.~7, no.~1, pp.
+  76--80, 2003.
+
 \bibitem{Koren09matrixfactorization}
 Y.~Koren, R.~Bell, and C.~Volinsky, ``Matrix factorization techniques for
   recommender systems,'' 2009.

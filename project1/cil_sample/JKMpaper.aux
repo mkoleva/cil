@@ -1,4 +1,6 @@
 \relax 
+\citation{amatriain2012netflix}
+\citation{linden2003amazon}
 \@writefile{toc}{\contentsline {section}{\numberline {I}Introduction}{1}}
 \@writefile{toc}{\contentsline {section}{\numberline {II}Models and Methods}{1}}
 \newlabel{sec:models}{{II}{1}}
@@ -19,34 +21,28 @@
 \newlabel{eqn:pearson}{{8}{3}}
 \newlabel{eqn:predict_user_based}{{9}{3}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {II-C}}The bold driver heuristic}{4}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {II-D}}Parameter optimization and validation}{4}}
-\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Signal compression and denoising using the Fourier basis.}}{4}}
-\newlabel{fig:denoise-fourier}{{1}{4}}
 \@writefile{toc}{\contentsline {section}{\numberline {III}Results}{4}}
 \newlabel{sec:results}{{III}{4}}
-\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Signal compression and denoising using the Daubechies wavelet basis.}}{4}}
-\newlabel{fig:denoise-wavelet}{{2}{4}}
-\@writefile{toc}{\contentsline {section}{\numberline {IV}Discussion}{4}}
-\newlabel{sec:discussion}{{IV}{4}}
-\citation{anderson04}
-\citation{wavelab}
-\citation{kallet04methods}
-\@writefile{toc}{\contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {IV-A}}Results}{5}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {\unhbox \voidb@x \hbox {IV-A}1}Installation}{5}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {\unhbox \voidb@x \hbox {IV-A}2}Compiling \LaTeX  {}}{5}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {\unhbox \voidb@x \hbox {IV-A}3}Equations}{5}}
-\newlabel{eq:linear}{{11}{5}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {\unhbox \voidb@x \hbox {IV-A}4}Tables and Figures}{5}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {IV-B}}Grading}{5}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {III-A}}Parameter optimization and validation}{4}}
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces RMSE decreases over time (epochs) for the SGD algorithm with varying number of the C parameter and with and without the use of the Bold Driver learning rate heuristic. Optimal error 0.98066 achieved after 217 epochs with the C100, and 0.9811 achieved after 98 epochs with the BD C80 setup. Results are on a randomly generated dataset of 58847 user-film pairs. The vertical lines mark the epochs when the minimum error was achieved.}}{4}}
+\newlabel{fig:sgd-conv}{{1}{4}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {III-B}}SGD Bold Driver and C parameter validation}{4}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {III-C}}RBM Bold Driver}{4}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {III-D}}kNN validation maybe?}{4}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {III-E}}Comparison between baseline and optimal algos}{4}}
 \bibstyle{IEEEtran}
 \bibdata{JKM-literature}
-\bibcite{Koren09matrixfactorization}{1}
-\bibcite{AHS85}{2}
-\bibcite{SMH07}{3}
-\bibcite{L10}{4}
-\bibcite{H02}{5}
-\@writefile{lot}{\contentsline {table}{\numberline {I}{\ignorespaces Characteristics of Fourier and wavelet basis.}}{6}}
-\newlabel{tab:fourier-wavelet}{{I}{6}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {IV-C}}Submission System}{6}}
-\@writefile{toc}{\contentsline {section}{\numberline {V}Summary}{6}}
-\@writefile{toc}{\contentsline {section}{References}{6}}
+\bibcite{amatriain2012netflix}{1}
+\bibcite{linden2003amazon}{2}
+\bibcite{Koren09matrixfactorization}{3}
+\bibcite{AHS85}{4}
+\bibcite{SMH07}{5}
+\bibcite{L10}{6}
+\bibcite{H02}{7}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Zoomed-in version of Figure 1\hbox {}. Dashed graphs show results for algorithm with bold driver heuristic. Those converge much faster than the pure algorithm at the cost of 0.0004 compared to the optimal algorithm without the heuristic.}}{5}}
+\newlabel{fig:sgd-conv-zoom}{{2}{5}}
+\@writefile{toc}{\contentsline {section}{\numberline {IV}Discussion}{5}}
+\newlabel{sec:discussion}{{IV}{5}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {IV-A}}Submission System}{5}}
+\@writefile{toc}{\contentsline {section}{\numberline {V}Summary}{5}}
+\@writefile{toc}{\contentsline {section}{References}{5}}
