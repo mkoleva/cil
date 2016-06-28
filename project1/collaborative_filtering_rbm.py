@@ -11,13 +11,13 @@ from multiprocessing import Process
 
 machine = BernoulliRBM_Custom
 trainingMatrix = []
-visible_input_probability = []
 
 machine_80_bd, machine_100_bd = BernoulliRBM_Custom, BernoulliRBM_Custom
 machine_80_no_bd, machine_100_no_bd = BernoulliRBM_Custom, BernoulliRBM_Custom
 
 def do_prediction(machine):
-    global visible_input_probability
+
+    visible_input_probability = machine.compute_visible_input_probability(trainingMatrix)
 
     sample_submission = np.genfromtxt('data/sampleSubmission.csv', delimiter=',', dtype=None)
 
@@ -57,21 +57,23 @@ def task_3():
 def task_4():
     machine_100_no_bd.fit(trainingMatrix)
 
-def do_some_plots():
+def do_some_plots(validationSubset):
+    global machine_80_bd, machine_100_bd, machine_100_no_bd, machine_80_no_bd
+
     machine_80_bd = BernoulliRBM_Custom(random_state=0, verbose=True, n_components=80,
-                                     n_iter=100, learning_rate=0.05, validation_set=validationSubset,
+                                     n_iter=60, learning_rate=0.05, validation_set=validationSubset,
                                      use_bold_driver=True)
 
     machine_100_bd = BernoulliRBM_Custom(random_state=0, verbose=True, n_components=100,
-                                      n_iter=100, learning_rate=0.05, validation_set=validationSubset,
+                                      n_iter=60, learning_rate=0.05, validation_set=validationSubset,
                                       use_bold_driver=True)
 
     machine_80_no_bd = BernoulliRBM_Custom(random_state=0, verbose=True, n_components=80,
-                                     n_iter=100, learning_rate=0.05, validation_set=validationSubset,
+                                     n_iter=60, learning_rate=0.05, validation_set=validationSubset,
                                      use_bold_driver=False)
 
     machine_100_no_bd = BernoulliRBM_Custom(random_state=0, verbose=True, n_components=100,
-                                      n_iter=100, learning_rate=0.05, validation_set=validationSubset,
+                                      n_iter=60, learning_rate=0.05, validation_set=validationSubset,
                                       use_bold_driver=False)
 
     p1 = Process(target=task_1)
@@ -103,7 +105,7 @@ def do_grid_search():
 
 def code():
 
-    global trainingMatrix, machine_80_bd, machine_100_bd, machine_100_no_bd, machine_80_no_bd
+    global trainingMatrix
 
     trainingSubset = parseInputMatrix()
 
@@ -123,16 +125,17 @@ def code():
     for (u, m, rating) in trainingSubset:
         trainingMatrix[u][get_index_of_movie_rating_in_visible_vector(m, rating)] = 1
 
-    machine_90_bd = BernoulliRBM_Custom(random_state=0, verbose=True, n_components=n_hidden,
+    #do_some_plots(validationSubset)
+
+    machine = BernoulliRBM_Custom(random_state=0, verbose=True, n_components=50,
                                   n_iter=60, learning_rate=0.05, validation_set=validationSubset,
                                   use_bold_driver=True)
 
-    machine_90_bd.fit(trainingMatrix)
+    machine.fit(trainingMatrix)
 
-    visible_input_probability = machine_90_bd.compute_visible_input_probability(trainingMatrix)
     machine.do_validation(trainingMatrix, validationSubset, save_feature_vector= True)
 
-    do_prediction(machine_90_bd)
+    do_prediction(machine)
 
 
 if __name__ == '__main__':
