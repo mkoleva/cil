@@ -7,62 +7,18 @@ from sklearn.neural_network import BernoulliRBM
 from sklearn.grid_search import GridSearchCV
 from rbm_custom import BernoulliRBM_Custom
 
+from multiprocessing import Process
+
 machine = BernoulliRBM_Custom
 trainingMatrix = []
 visible_input_probability = []
 
-def compute_visible_input_probability():
-    global visible_input_probability, trainingMatrix, machine
+machine_80_bd, machine_100_bd = BernoulliRBM_Custom, BernoulliRBM_Custom
+machine_80_no_bd, machine_100_no_bd = BernoulliRBM_Custom, BernoulliRBM_Custom
 
-    visible_input_probability = np.zeros((10000, 5000))
+def do_prediction(machine):
+    global visible_input_probability
 
-    p_hat =  machine.transform(trainingMatrix)
-    visible_input_probability = machine._mean_visibles(p_hat)
-
-def predict_rating(user, movie):
-    global machine, visible_input_probability
-
-    tmp = visible_input_probability[user]
-
-    numerator = np.exp(tmp[movie*5: (movie+1)*5])
-    denominator = sum(numerator)
-
-    predicted_rating = numerator / denominator
-
-    return_value = 0
-    for i in range(1,6):
-        return_value += i*predicted_rating[i-1]
-
-    return return_value
-
-def do_validation(validationSubset, save_feature_vector=False):
-
-    compute_visible_input_probability()
-
-    feature_vector_for_regression = []
-
-    error = 0
-
-    for (u, m, rating) in validationSubset:
-
-        predicted_rating = predict_rating(u, m)
-
-        feature_vector_for_regression.append([predicted_rating, rating])
-
-        error += pow((predicted_rating - rating), 2)
-
-
-    error /= np.shape(validationSubset)[0]
-
-    error = np.sqrt(error)
-
-    if save_feature_vector:
-        np.save('data/rbm/feature_vector_rbm', feature_vector_for_regression)
-
-    return error
-
-
-def do_prediction():
     sample_submission = np.genfromtxt('data/sampleSubmission.csv', delimiter=',', dtype=None)
 
     f = open('data/rbm/my_prediction_rbm.csv', 'w')
@@ -77,7 +33,7 @@ def do_prediction():
         user = int(entry[0][1:])
         movie = int(entry[1][1:])
 
-        predicted_rating = predict_rating(user - 1, movie - 1)
+        predicted_rating = machine.predict_rating(user - 1, movie - 1, visible_input_probability)
 
         if predicted_rating > 5:
             f.write('r%d_c%d,%f\n' % (user, movie, 5))
@@ -89,9 +45,65 @@ def do_prediction():
 def get_index_of_movie_rating_in_visible_vector(movie, rating):
     return 5 * movie + (rating - 1)
 
+def task_1():
+    machine_80_bd.fit(trainingMatrix)
+
+def task_2():
+    machine_100_bd.fit(trainingMatrix)
+
+def task_3():
+    machine_80_no_bd.fit(trainingMatrix)
+
+def task_4():
+    machine_100_no_bd.fit(trainingMatrix)
+
+def do_some_plots():
+    machine_80_bd = BernoulliRBM_Custom(random_state=0, verbose=True, n_components=80,
+                                     n_iter=100, learning_rate=0.05, validation_set=validationSubset,
+                                     use_bold_driver=True)
+
+    machine_100_bd = BernoulliRBM_Custom(random_state=0, verbose=True, n_components=100,
+                                      n_iter=100, learning_rate=0.05, validation_set=validationSubset,
+                                      use_bold_driver=True)
+
+    machine_80_no_bd = BernoulliRBM_Custom(random_state=0, verbose=True, n_components=80,
+                                     n_iter=100, learning_rate=0.05, validation_set=validationSubset,
+                                     use_bold_driver=False)
+
+    machine_100_no_bd = BernoulliRBM_Custom(random_state=0, verbose=True, n_components=100,
+                                      n_iter=100, learning_rate=0.05, validation_set=validationSubset,
+                                      use_bold_driver=False)
+
+    p1 = Process(target=task_1)
+    p2 = Process(target=task_2)
+    p3 = Process(target=task_3)
+    p4 = Process(target=task_4)
+
+    p1.start()
+    p2.start()
+    p3.start()
+    p4.start()
+
+def do_grid_search():
+    for num_hidden in range(20, 101, 10):
+            for num_iter in range(10, 20):
+                machine = BernoulliRBM(random_state=0, verbose=True, n_components=num_hidden,
+                                       n_iter=num_iter, learning_rate=0.05, validation_set=validationSubset,
+                                       use_bold_driver=True)
+                machine.fit(trainingMatrix)
+                print num_hidden, num_iter
+                error = do_validation(validationSubset)
+
+                if error < min_error:
+                    min_error = error
+                    best_hidden = num_hidden
+                    best_iter = num_iter
+
+                print "best: ", min_error, best_hidden, best_iter
+
 def code():
 
-    global trainingMatrix, machine
+    global trainingMatrix, machine_80_bd, machine_100_bd, machine_100_no_bd, machine_80_no_bd
 
     trainingSubset = parseInputMatrix()
 
@@ -111,36 +123,16 @@ def code():
     for (u, m, rating) in trainingSubset:
         trainingMatrix[u][get_index_of_movie_rating_in_visible_vector(m, rating)] = 1
 
-    # calculated by grid search below
-    min_error = 0.998
-    best_hidden = 80
-    best_iter = 19
+    machine_90_bd = BernoulliRBM_Custom(random_state=0, verbose=True, n_components=n_hidden,
+                                  n_iter=60, learning_rate=0.05, validation_set=validationSubset,
+                                  use_bold_driver=True)
 
-    if False:
-        for num_hidden in range(20, 101, 10):
-            for num_iter in range(10, 20):
-                machine = BernoulliRBM(random_state=0, verbose=True, n_components=num_hidden,
-                                       n_iter=num_iter, learning_rate=0.05)
-                machine.fit(trainingMatrix)
-                print num_hidden, num_iter
-                error = do_validation(validationSubset)
+    machine_90_bd.fit(trainingMatrix)
 
-                if error < min_error:
-                    min_error = error
-                    best_hidden = num_hidden
-                    best_iter = num_iter
+    visible_input_probability = machine_90_bd.compute_visible_input_probability(trainingMatrix)
+    machine.do_validation(trainingMatrix, validationSubset, save_feature_vector= True)
 
-                print "best: ", min_error, best_hidden, best_iter
-
-    machine = BernoulliRBM_Custom(random_state=0, verbose=True, n_components=best_hidden,
-                                 n_iter=100, learning_rate=0.2, error_function=do_validation,
-                                 validation_set=validationSubset)
-    machine.fit(trainingMatrix)
-    print best_hidden, best_iter
-
-    do_validation(validationSubset, save_feature_vector= True)
-
-    do_prediction()
+    do_prediction(machine_90_bd)
 
 
 if __name__ == '__main__':

@@ -96,16 +96,15 @@ class BernoulliRBM_Custom(BaseEstimator, TransformerMixin):
         on Machine Learning (ICML) 2008
     """
     def __init__(self, n_components=256, learning_rate=0.1, batch_size=10,
-                 n_iter=10, verbose=0, random_state=None, error_function=None, validation_set=None):
+                 n_iter=10, verbose=0, random_state=None, validation_set=None, use_bold_driver=True):
         self.n_components = n_components
         self.learning_rate = learning_rate
         self.batch_size = batch_size
         self.n_iter = n_iter
         self.verbose = verbose
         self.random_state = random_state
-        self.error_function = error_function
         self.validation_set = validation_set
-
+        self.use_bold_driver = use_bold_driver
     def transform(self, X):
         """Compute the hidden layer activation probabilities, P(h=1|v=X).
 
@@ -369,9 +368,16 @@ class BernoulliRBM_Custom(BaseEstimator, TransformerMixin):
         begin = time.time()
 
         # bold driver parameters
+
         previous_error=100000000.0
-        inc=0.05
-        dec=0.75
+        inc = 0
+        dec = 1
+
+        if self.use_bold_driver == True:
+            inc=0.05
+            dec=0.75
+
+        error_saved_for_rbm_plots = []
 
         for iteration in xrange(1, self.n_iter + 1):
             for batch_slice in batch_slices:
@@ -380,26 +386,76 @@ class BernoulliRBM_Custom(BaseEstimator, TransformerMixin):
             if verbose:
                 end = time.time()
 
-                if self.error_function == None:
-                    print("[%s] Iteration %d, pseudo-likelihood = %.2f,"
-                          " time = %.2fs"
-                          % (type(self).__name__, iteration,
-                             self.score_samples(X).mean(), end - begin))
+                e = self.do_validation(X, self.validation_set)
 
+                print("[%s] Iteration %d, error = %f,"
+                      " time = %.2fs learning rate = %f components = %f"
+                      % (type(self).__name__, iteration,
+                         e, end - begin, self.learning_rate, self.n_components))
+
+                error_saved_for_rbm_plots.append([iteration, e])
+
+                if(e<=previous_error):
+                    self.learning_rate *= (1.0+inc)
                 else:
-                    e = self.error_function(self.validation_set)
-
-                    print("[%s] Iteration %d, error = %f,"
-                          " time = %.2fs learning rate = %f"
-                          % (type(self).__name__, iteration,
-                             e, end - begin, self.learning_rate))
-
-                    if(e<=previous_error):
-                        self.learning_rate *= (1.0+inc)
-                    else:
-                        self.learning_rate *= dec
-                    previous_error=e
+                    self.learning_rate *= dec
+                previous_error=e
 
                 begin = end
 
+        tmp = '_with'
+        if self.use_bold_driver==False:
+            tmp = '_without'
+        path = 'data/rbm/rbm_c_'+str(self.n_components)+tmp+'_bold_driver'
+        np.save(path, error_saved_for_rbm_plots)
+
         return self
+
+    def do_validation(self, trainingMatrix, validationSubset, save_feature_vector=False):
+
+        visible_input_probability = self.compute_visible_input_probability(trainingMatrix)
+
+        feature_vector_for_regression = []
+
+        error = 0
+
+        for (u, m, rating) in validationSubset:
+
+            predicted_rating = self.predict_rating(u, m, visible_input_probability)
+
+            feature_vector_for_regression.append([predicted_rating, rating])
+
+            error += pow((predicted_rating - rating), 2)
+
+
+        error /= np.shape(validationSubset)[0]
+
+        error = np.sqrt(error)
+
+        if save_feature_vector:
+            np.save('data/rbm/feature_vector_rbm', feature_vector_for_regression)
+
+        return error
+
+    def compute_visible_input_probability(self, trainingMatrix):
+
+        visible_input_probability = np.zeros((10000, 5000))
+
+        p_hat =  self.transform(trainingMatrix)
+        visible_input_probability = self._mean_visibles(p_hat)
+
+        return visible_input_probability
+
+    def predict_rating(self, user, movie, visible_input_probability):
+        tmp = visible_input_probability[user]
+
+        numerator = np.exp(tmp[movie*5: (movie+1)*5])
+        denominator = sum(numerator)
+
+        predicted_rating = numerator / denominator
+
+        return_value = 0
+        for i in range(1,6):
+            return_value += i*predicted_rating[i-1]
+
+        return return_value
