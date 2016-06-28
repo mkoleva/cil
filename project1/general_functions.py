@@ -76,7 +76,69 @@ def sort_indices_of_neighbors(weight_matrix):
     return sorted_indices_of_neighbors
 
 
-def plotStuff():
+def plotRBM():
+    import matplotlib.pyplot as plt
+
+    dataB = np.load('data/rbm/rbm_c_100_with_bold_driver.npy')[:,1]
+    data = np.load('data/rbm/rbm_c_100_without_bold_driver.npy')[:,1]
+    dataB2 = np.load('data/rbm/rbm_c_80_with_bold_driver.npy')[:,1]
+    data2 = np.load('data/rbm/rbm_c_80_without_bold_driver.npy')[:,1]
+
+
+    # with plt.style.context('fivethirtyeight'):
+
+    minBold100 = np.argmin(dataB)
+    minBold80 = np.argmin(dataB2)
+    min80 = np.argmin(data2)
+    min100 = np.argmin(data)
+
+    minBold100Val = min(dataB)
+    minBold80Val = min(dataB2)
+    min80Val = min(data2)
+    min100Val = min(data)
+
+
+    print np.argmin(dataB), min(dataB)
+    print np.argmin(dataB2), min(dataB2)
+
+    print np.argmin(data), min(data)
+    print np.argmin(data2), min(data2)
+
+    plt.xlabel('Epochs')
+    plt.ylabel('RMSE')
+
+    plt.plot(dataB, linestyle='-.', linewidth=2, label='BD 100 hidden')
+    plt.plot(dataB2, linestyle='--', linewidth=2, label='BD 80 hidden')
+    plt.plot(data, linestyle='-', linewidth=1, label='100 hidden')
+    plt.plot(data2, linestyle='-', linewidth=1, label='80 hidden')
+
+
+    plt.text(minBold80+1, 1.038, 'best BD80')
+    plt.text(minBold100+1, 1.035, 'best BD100')
+    plt.text(min80+1, 1.035, 'best c80')
+    plt.text(min100+1, 1.030, 'best c100')
+
+
+    plt.axvline(x=minBold80, color='gray', alpha=0.7)
+    plt.axvline(x=minBold100, color='gray')
+    plt.axvline(x=min80, color='gray', alpha=0.7)
+    plt.axvline(x=min100, color='gray', alpha=0.7)
+
+    # plt.axhline(y=minBold80Val, color='gray', alpha=0.7)
+    # plt.axhline(y=minBold100Val, color='gray')
+    # plt.axhline(y=min80Val, color='gray', alpha=0.7)
+    # plt.axhline(y=min100Val, color='gray', alpha=0.7)
+
+
+    plt.legend(loc='upper left')
+
+    plt.show()
+
+    # for point1, point2 in zip(data, data2):
+    #     print str(point1) + '\t' + str(point2)
+
+
+def plotSGD():
     import matplotlib.pyplot as plt
 
     dataB = np.sqrt(np.load('data/sgd/error_vector_sgd_bold_driver.npy')/58847)
@@ -141,7 +203,8 @@ def plotStuff():
 
 
 if __name__=='__main__':
-    plotStuff()
+    # plotStuff()
+    plotRBM()
 
 
 
