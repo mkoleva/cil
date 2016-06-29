@@ -11,6 +11,7 @@ def train():
     feature_vector_sgd_c_100 = np.load('data/sgd/feature_vector_sgd_100.npy')
     feature_vector_knn = np.load('data/knn/feature_vector_knn.npy')
     feature_vector_knn_items = np.load('data/knn/feature_vector_knn_items.npy')
+    feature_vector_rbm_50 = np.load('data/rbm/feature_vector_rbm_50.npy')
     feature_vector_rbm_80 = np.load('data/rbm/feature_vector_rbm_80.npy')
     feature_vector_rbm_100 = np.load('data/rbm/feature_vector_rbm_100.npy')
 
@@ -23,6 +24,7 @@ def train():
                   feature_vector_sgd_c_100[i][0],
                   feature_vector_knn[i][0],
                   feature_vector_knn_items[i][0],
+                  feature_vector_rbm_50[i][0],
                   feature_vector_rbm_80[i][0],
                   feature_vector_rbm_100[i][0]])
 
@@ -47,6 +49,7 @@ def predict(regressor):
     sgd_c_100 = np.genfromtxt('data/sgd/my_prediction_sgd_100.csv', delimiter=',', dtype=None)
     knn = np.genfromtxt('data/knn/my_prediction_knn.csv', delimiter=',', dtype=None)
     knn_items = np.genfromtxt('data/knn/my_prediction_knn_items.csv', delimiter=',', dtype=None)
+    rbm_50 = np.genfromtxt('data/rbm/my_prediction_rbm_50.csv', delimiter=',', dtype=None)
     rbm_80 = np.genfromtxt('data/rbm/my_prediction_rbm_80.csv', delimiter=',', dtype=None)
     rbm_100 = np.genfromtxt('data/rbm/my_prediction_rbm_100.csv', delimiter=',', dtype=None)
 
@@ -70,6 +73,7 @@ def predict(regressor):
         sgd_100_rating = float(sgd_c_100[i][1])
         knn_rating = float(knn[i][1])
         knn_items_rating = float(knn_items[i][1])
+        rbm_50_rating = float(rbm_50[i][1])
         rbm_80_rating = float(rbm_80[i][1])
         rbm_100_rating = float(rbm_100[i][1])
 
@@ -79,6 +83,7 @@ def predict(regressor):
                                                   sgd_100_rating,
                                                   knn_rating,
                                                   knn_items_rating,
+                                                  rbm_50_rating,
                                                   rbm_80_rating,
                                                   rbm_100_rating]]))
 
