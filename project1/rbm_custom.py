@@ -433,7 +433,7 @@ class BernoulliRBM_Custom(BaseEstimator, TransformerMixin):
         error = np.sqrt(error)
 
         if save_feature_vector:
-            np.save('data/rbm/feature_vector_rbm', feature_vector_for_regression)
+            np.save('data/rbm/feature_vector_rbm_'+str(self.n_components), feature_vector_for_regression)
 
         return error
 
@@ -459,3 +459,30 @@ class BernoulliRBM_Custom(BaseEstimator, TransformerMixin):
             return_value += i*predicted_rating[i-1]
 
         return return_value
+
+    def do_prediction(self, trainingMatrix):
+
+        visible_input_probability = self.compute_visible_input_probability(trainingMatrix)
+
+        sample_submission = np.genfromtxt('data/sampleSubmission.csv', delimiter=',', dtype=None)
+
+        f = open('data/rbm/my_prediction_rbm_'+str(self.n_components)+'.csv', 'w')
+
+        f.write('%s\n' % "Id,Prediction")
+
+        for i in range(1, np.shape(sample_submission)[0]):
+            if i % 1000 == 0:
+                print i
+
+            entry = sample_submission[i][0].split("_")
+            user = int(entry[0][1:])
+            movie = int(entry[1][1:])
+
+            predicted_rating = self.predict_rating(user - 1, movie - 1, visible_input_probability)
+
+            if predicted_rating > 5:
+                f.write('r%d_c%d,%f\n' % (user, movie, 5))
+            else:
+                f.write('r%d_c%d,%f\n' % (user, movie, predicted_rating))
+
+        f.close()

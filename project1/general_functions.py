@@ -204,7 +204,7 @@ def plotSGD():
 
 if __name__=='__main__':
     # plotStuff()
-    plotRBM()
+    plotSGD()
 
 
 

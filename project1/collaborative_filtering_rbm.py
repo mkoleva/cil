@@ -10,55 +10,37 @@ from rbm_custom import BernoulliRBM_Custom
 from multiprocessing import Process
 
 machine = BernoulliRBM_Custom
-trainingMatrix = []
+trainingMatrix, validationSubset = [], []
 
-machine_80_bd, machine_100_bd = BernoulliRBM_Custom, BernoulliRBM_Custom
+machine_50_bd, machine_80_bd, machine_100_bd = BernoulliRBM_Custom, BernoulliRBM_Custom, BernoulliRBM_Custom
 machine_80_no_bd, machine_100_no_bd = BernoulliRBM_Custom, BernoulliRBM_Custom
-
-def do_prediction(machine):
-
-    visible_input_probability = machine.compute_visible_input_probability(trainingMatrix)
-
-    sample_submission = np.genfromtxt('data/sampleSubmission.csv', delimiter=',', dtype=None)
-
-    f = open('data/rbm/my_prediction_rbm.csv', 'w')
-
-    f.write('%s\n' % "Id,Prediction")
-
-    for i in range(1, np.shape(sample_submission)[0]):
-        if i % 1000 == 0:
-            print i
-
-        entry = sample_submission[i][0].split("_")
-        user = int(entry[0][1:])
-        movie = int(entry[1][1:])
-
-        predicted_rating = machine.predict_rating(user - 1, movie - 1, visible_input_probability)
-
-        if predicted_rating > 5:
-            f.write('r%d_c%d,%f\n' % (user, movie, 5))
-        else:
-            f.write('r%d_c%d,%f\n' % (user, movie, predicted_rating))
-
-    f.close()
 
 def get_index_of_movie_rating_in_visible_vector(movie, rating):
     return 5 * movie + (rating - 1)
 
-def task_1():
+def task_0_50_bd():
+    machine_50_bd.fit(trainingMatrix)
+    machine_50_bd.do_validation(trainingMatrix, validationSubset, save_feature_vector= True)
+    machine_50_bd.do_prediction(trainingMatrix)
+
+def task_1_80_bd():
     machine_80_bd.fit(trainingMatrix)
+    machine_80_bd.do_validation(trainingMatrix, validationSubset, save_feature_vector= True)
+    machine_80_bd.do_prediction(trainingMatrix)
 
-def task_2():
+def task_2_100_bd():
     machine_100_bd.fit(trainingMatrix)
+    machine_100_bd.do_validation(trainingMatrix, validationSubset, save_feature_vector= True)
+    machine_100_bd.do_prediction(trainingMatrix)
 
-def task_3():
+def task_3_80_no_bd():
     machine_80_no_bd.fit(trainingMatrix)
 
-def task_4():
+def task_4_100_no_bd():
     machine_100_no_bd.fit(trainingMatrix)
 
-def do_some_plots(validationSubset):
-    global machine_80_bd, machine_100_bd, machine_100_no_bd, machine_80_no_bd
+def do_some_plots():
+    global validationSubset, machine_80_bd, machine_100_bd, machine_100_no_bd, machine_80_no_bd
 
     machine_80_bd = BernoulliRBM_Custom(random_state=0, verbose=True, n_components=80,
                                      n_iter=60, learning_rate=0.05, validation_set=validationSubset,
@@ -76,15 +58,38 @@ def do_some_plots(validationSubset):
                                       n_iter=60, learning_rate=0.05, validation_set=validationSubset,
                                       use_bold_driver=False)
 
-    p1 = Process(target=task_1)
-    p2 = Process(target=task_2)
-    p3 = Process(target=task_3)
-    p4 = Process(target=task_4)
+    p1 = Process(target=task_1_80_bd)
+    p2 = Process(target=task_2_100_bd)
+    p3 = Process(target=task_3_80_no_bd)
+    p4 = Process(target=task_4_100_no_bd)
 
     p1.start()
     p2.start()
     p3.start()
     p4.start()
+
+def run_three_final_machines_in_parallel():
+    global trainingMatrix, validationSubset, machine_50_bd, machine_80_bd, machine_100_bd
+
+    machine_50_bd = BernoulliRBM_Custom(random_state=0, verbose=True, n_components=50,
+                                        n_iter=80, learning_rate=0.05, validation_set=validationSubset,
+                                        use_bold_driver=True)
+
+    machine_80_bd = BernoulliRBM_Custom(random_state=0, verbose=True, n_components=80,
+                                        n_iter=80, learning_rate=0.05, validation_set=validationSubset,
+                                        use_bold_driver=True)
+
+    machine_100_bd = BernoulliRBM_Custom(random_state=0, verbose=True, n_components=100,
+                                        n_iter=80, learning_rate=0.05, validation_set=validationSubset,
+                                        use_bold_driver=True)
+
+    p0 = Process(target=task_0_50_bd)
+    p1 = Process(target=task_1_80_bd)
+    p2 = Process(target=task_2_100_bd)
+
+    p0.start()
+    p1.start()
+    p2.start()
 
 def do_grid_search():
     for num_hidden in range(20, 101, 10):
@@ -105,7 +110,7 @@ def do_grid_search():
 
 def code():
 
-    global trainingMatrix
+    global trainingMatrix, validationSubset
 
     trainingSubset = parseInputMatrix()
 
@@ -125,18 +130,9 @@ def code():
     for (u, m, rating) in trainingSubset:
         trainingMatrix[u][get_index_of_movie_rating_in_visible_vector(m, rating)] = 1
 
-    #do_some_plots(validationSubset)
+    #do_some_plots()
 
-    machine = BernoulliRBM_Custom(random_state=0, verbose=True, n_components=50,
-                                  n_iter=60, learning_rate=0.05, validation_set=validationSubset,
-                                  use_bold_driver=True)
-
-    machine.fit(trainingMatrix)
-
-    machine.do_validation(trainingMatrix, validationSubset, save_feature_vector= True)
-
-    do_prediction(machine)
-
+    run_three_final_machines_in_parallel()
 
 if __name__ == '__main__':
     code()
