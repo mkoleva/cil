@@ -223,14 +223,14 @@ The accuracy of the SGD algorithm for matrix factorisation is strongly linked to
 \end{figure} 
  
 \subsection{RBM Bold Driver}
-Some comments here.
+In case of the Robust Boltzman Machine we investigated the effect of the number of hidden units on accuracy. As the bold driver heuristic improved the convergence speed of SGD, we also implemented it for RBM and validated its effect. Figure \ref{fig:rbm-conv-zoom} shows how number of iterations of the algorithm (epochs) and accuracy is affected by number of hidden units and bold driver heuristic. To find the optimal hyper-parameters we used \textit{grid_search} from \textit{sklearn}, hidden units ranging between 20 and 101 and iteration between \textbf{what? not 10 and 20 as it is now in the code?}. The optimal results are plotted. In our final set-up we used \textbf{What?}.
 
 
 \begin{figure}[htbp]
   \centering
   \includegraphics[width=\columnwidth]{conv_rbm_all.png}
   \caption{Effect of Bold Driver heuristic on RMSE error of RBM with 80 and 100 hidden units. The optimal error achieved without Bold Driver is 0.99883 with 100 units after 18 epochs and 0.98885 with Bold Driver after 78 epochs.}
-  \label{fig:sgd-conv-zoom}
+  \label{fig:rbm-conv-zoom}
 \end{figure} 
 
 \subsection{kNN validation maybe?}
@@ -243,7 +243,7 @@ Most important chart here
 \label{sec:discussion}
 The aim of our experiments was to investigate if we could achieve better overall accuracy by combining different algorithms which were known to perform well on the Netflix dataset and collaborative filtering problems in general. The intuition was that latent factor models and neighbourhood based models capture different features of the underlying signal of the data. This was confirmed by bla bla bla \textbf{when we report the scores  of the pure SGD and SVD against the combination we should discuss it here}. 
 
-Our second contribution was the investigation of the Bold Driver heuristic. It halved the number of epochs required for the SGD algorithm to achieve the optimal values (\textbf{and RBM?} at a small cost. This was 0.0005 on the validation set, but less than \textbf{Some number here?} on the online Kaggle dataset. The convergence and the accuracy of the iterative algorithm depends the C value as well, but as we can see in Figure \ref{fig:sgd-conv-zoom}, all algorithms with the Bold Driver heuristic achieve faster convergence than those without from the beginning regardless of the value of C. The Bold Driver SGD with C=40 has a later second drop (after $180^{th}$ epoch), compared to the same with $C=80$ or $100$, however it is still faster than each of the pure algorithms at the cost of $<0.001$.
+Our second contribution was the investigation of the Bold Driver heuristic. It halved the number of epochs required for the SGD algorithm to achieve the optimal values (\textbf{and RBM?} at a small cost. This was 0.0005 on the validation set, but less than \textbf{Some number here?} on the online Kaggle dataset. The convergence and the accuracy of the iterative algorithm depends the C value as well, but as we can see in Figure \ref{fig:sgd-conv-zoom}, all algorithms with the Bold Driver heuristic achieve faster convergence than those without from the beginning regardless of the value of C. The Bold Driver SGD with C=40 has a later second drop (after $180^{th}$ epoch), compared to the same with $C=80$ or $100$, however it is still faster than each of the pure algorithms at the cost of $<0.001$. The effect of bold driver is even more significant on the RBM. Set-ups with the heuristic achieve a much better accuracy, as the error continues to decrease for 50 or more epochs and achieves an improvement of $0.01$ compared to the pure version. If we compare the results in Figure \ref{fig:sgd-conv-zoom} and \ref{fig:rbm-conv-zoom}, we see the differences in how the Bold Driver affects the two methods. Whereas in the case of SGD, it simply helps the algorithm to get to the optimal values faster by taking into account the curvature of the surface, in RBM it significantly improves the score. This could be due to the fact that the RBM objective function and surface are more difficult to navigate with the pure learning rate method, optimal paths can be missed and we can see that the algorithm is prone to over-fitting. The Bold Driver mitigates those dangers and is crucial to the success of the method. 
 
 
 

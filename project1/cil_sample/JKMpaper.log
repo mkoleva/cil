@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.15 (TeX Live 2015/dev/Debian) (preloaded format=pdflatex 2015.9.29)  28 JUN 2016 16:39
+This is pdfTeX, Version 3.14159265-2.6-1.40.15 (TeX Live 2015/dev/Debian) (preloaded format=pdflatex 2015.9.29)  29 JUN 2016 10:59
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -428,11 +428,7 @@ LaTeX Info: Redefining \addtolength on input line 76.
 \cur@row=\count144
 \cur@col=\count145
 \conditionsep=\skip63
-) (./JKMpaper.aux
-
-LaTeX Warning: Label `fig:sgd-conv-zoom' multiply defined.
-
-)
+) (./JKMpaper.aux)
 \openout1 = `JKMpaper.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 11.
@@ -447,7 +443,8 @@ LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 11.
 LaTeX Font Info:    ... okay on input line 11.
 LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 11.
 LaTeX Font Info:    ... okay on input line 11.
- (/usr/share/texlive/texmf-dist/tex/context/base/supp-pdf.mkii
+
+(/usr/share/texlive/texmf-dist/tex/context/base/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
 \scratchcounter=\count146
 \scratchdimen=\dimen185
@@ -537,20 +534,18 @@ File: convergence_zoom_all.png Graphic file (type png)
 <use convergence_zoom_all.png>
 Package pdftex.def Info: convergence_zoom_all.png used on input line 220.
 (pdftex.def)             Requested size: 243.91125pt x 177.53412pt.
-
-<conv_rbm_all.png, id=27, 751.608pt x 529.0164pt>
+ [4 <./convergence_speed_all.png>]
+<conv_rbm_all.png, id=31, 751.608pt x 529.0164pt>
 File: conv_rbm_all.png Graphic file (type png)
  <use conv_rbm_all.png>
 Package pdftex.def Info: conv_rbm_all.png used on input line 231.
 (pdftex.def)             Requested size: 243.91125pt x 171.67805pt.
-
-[4 <./convergence_speed_all.png>]
 LaTeX Font Info:    Try loading font information for OT1+pcr on input line 279.
 
 
 (/usr/share/texlive/texmf-dist/tex/latex/psnfss/ot1pcr.fd
 File: ot1pcr.fd 2001/06/04 font definitions for OT1/pcr.
-) (./JKMpaper.bbl
+) [5 <./convergence_zoom_all.png> <./conv_rbm_all.png>] (./JKMpaper.bbl
 Missing character: There is no â in font ptmr7t!
 Missing character: There is no € in font ptmr7t!
 Missing character: There is no ‹ in font ptmr7t!
@@ -560,8 +555,7 @@ Missing character: There is no ‹ in font ptmr7t!
 Missing character: There is no â in font ptmr7t!
 Missing character: There is no € in font ptmr7t!
 Missing character: There is no ‹ in font ptmr7t!
-
-[5 <./convergence_zoom_all.png> <./conv_rbm_all.png>])
+)
 
 ** Conference Paper **
 Before submitting the final camera ready copy, remember to:
@@ -575,33 +569,29 @@ Before submitting the final camera ready copy, remember to:
 
 [6
 
-] (./JKMpaper.aux)
-
-LaTeX Warning: There were multiply-defined labels.
-
- ) 
+] (./JKMpaper.aux) ) 
 Here is how much of TeX's memory you used:
- 9104 strings out of 493105
- 163863 string characters out of 6137072
- 213373 words of memory out of 5000000
- 12503 multiletter control sequences out of 15000+600000
+ 9105 strings out of 493105
+ 163882 string characters out of 6137072
+ 213342 words of memory out of 5000000
+ 12504 multiletter control sequences out of 15000+600000
  37863 words of font info for 70 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  38i,17n,37p,10359b,317s stack positions out of 5000i,500n,10000p,200000b,80000s
-{/usr/share/texlive/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/share/texliv
-e/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/share/texlive/texm
-f-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texlive/texmf-dist
-/fonts/type1/public/amsfonts/cm/cmmi5.pfb></usr/share/texlive/texmf-dist/fonts/
-type1/public/amsfonts/cm/cmmi7.pfb></usr/share/texlive/texmf-dist/fonts/type1/p
-ublic/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/a
-msfonts/cm/cmr7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/
-cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cms
-y7.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/courier/ucrr8a.pfb></usr/
-share/texlive/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/share/texlive/t
-exmf-dist/fonts/type1/urw/times/utmbi8a.pfb></usr/share/texlive/texmf-dist/font
-s/type1/urw/times/utmr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/tim
-es/utmri8a.pfb>
-Output written on JKMpaper.pdf (6 pages, 323654 bytes).
+{/usr/share/texlive/texmf-dist/fonts/enc/dvips/base/8r.enc}
+</usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/
+share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/
+texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi5.pfb></usr/share/texlive
+/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/share/texlive/texmf-
+dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/fo
+nts/type1/public/amsfonts/cm/cmr7.pfb></usr/share/texlive/texmf-dist/fonts/type
+1/public/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/publ
+ic/amsfonts/cm/cmsy7.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/courier
+/ucrr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></u
+sr/share/texlive/texmf-dist/fonts/type1/urw/times/utmbi8a.pfb></usr/share/texli
+ve/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/share/texlive/texmf-dist/f
+onts/type1/urw/times/utmri8a.pfb>
+Output written on JKMpaper.pdf (6 pages, 325130 bytes).
 PDF statistics:
  83 PDF objects out of 1000 (max. 8388607)
  55 compressed objects within 1 object stream
