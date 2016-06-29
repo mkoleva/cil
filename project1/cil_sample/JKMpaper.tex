@@ -48,22 +48,21 @@
 
 \section{Introduction}
 
-Recommender systems have gained increasing popularity in the last 10-15 years, mainly due to their immediate market applications. The huge selection of products online offer retailers the opportunity to attract a wide-range of clients. However, it also means that users can no longer be expected to browse through everything available until they find the film, song or book they like the most. Good recommendations are key to both making the correct products available to the appropriate audience, but also to creating a unique, personalised experience which will attract new clients. These ideas are fundamental for many leading online businesses, notably Netflix \cite{amatriain2012netflix}, Amazon \cite{linden2003amazon}.
+Recommender systems have gained popularity in the last decade due to their immediate market applications. The huge selection of products allow online retailers to attract a wide-range of clients. However, it also means that users can no longer be expected to browse through everything available until they find the film, song or book they like the most. Good recommendations are key to both making the correct products available to the appropriate audience, and also, to creating a unique, personalised experience which will attract new clients. These ideas are fundamental for many leading online ventures, notably Netflix \cite{amatriain2012netflix}, Amazon \cite{linden2003amazon}.
 
-In this paper, we concentrate on the collaborative-filtering approach to recommender systems, which relies on previous user experiences (ratings), rather than pre-defined user profile [some ref about the two types]. We use a dataset with ratings from 10000 users on 1000 films.
+In this paper, we concentrate on the collaborative-filtering approach to recommender systems, which relies on previous user experiences (ratings), rather than pre-defined user profile. We use ratings from 10000 users on 1000 films from the Netflix dataset, which has been extensively studied as part of the Netflix challenge \cite{SMH07}, \cite{Koren09matrixfactorization}, \cite{funk2011netflix}.
 
-Our main contributions are two-fold: we first combine latent factor models (Singular Value Decomposition (\textbf{SVD}), Stochastic Gradient Descent for matrix factorization (\textbf{SGD}), Restricted Boltzmann Machines (\textbf{RBM}) and neighbourhood models (user- and item-based k-Nearest Neighbors (\textbf{kNN}) to produce a robust recommender system which optimizes the Root Mean Sqaured Error (RMSE) of predicted ratings on X[how many films] from Blaa to Bllaa. Second, we show that the addition of a more complex learning rate heuristic on SGD and RBM improves the score significantly, to X. 
+Our main contributions are two-fold: we first combine latent factor models (Singular Value Decomposition (\textbf{SVD}), Stochastic Gradient Descent for matrix factorization (\textbf{SGD}), Restricted Boltzmann Machines (\textbf{RBM}) and neighbourhood models (user- and item-based k-Nearest Neighbors (\textbf{kNN}) to produce a robust recommender system which optimizes the Root Mean Sqaured Error (RMSE) of 1176953 predicted ratings from \textbf{Base score} to \textbf{Best score without BD}. Secondly, we show that the addition of a more complex learning rate heuristic on SGD and RBM improves the score significantly, to \textbf{best score}. 
 
 In Section \ref{sec:models} we describe the idea and the implementation of our systems. We present the results from the local evaluation of the models and from the validation set on Kaggle in Section \ref{sec:results}. Finally, in Section \ref{sec:discussion} we interpret the improvements we achieved and discuss potential weaknesses and future work.
 
 
-
 \section{Models and Methods}
 \label{sec:models}
-All work is done on the dataset provided for the project. The data is a collection of \textit{(user, film, rating)} tuples. For training, we have 1176953 ratings available. The online evaluation on Kaggle is performed on another 1176953 ratings. We were able to see the prediction accuracy on 50\% of that online dataset and our goal was to improve that as it is believed to be representative of the full dataset.
+All of the work is done on the dataset provided for the project. The data is a collection of \textit{(user, film, rating)} tuples. For training, we have 1176953 ratings available. The online evaluation on Kaggle is performed on another 1176953 ratings. We were able to see the prediction accuracy on 50\% of that online dataset and our goal was to improve that as it is believed to be representative of the full dataset.
 \subsection{Data Model}
 
-The provided dataset can be most naturally seen as an $N\times M$ matrix, with $N$ being the number of users ($N=~10000$), and $M$ the number of films ($M=1000$). If every user had rated every film, the matrix would have $10^7$ entries. However, in this realistic scenario, this is not the case and our matrix is quite sparse. From here stems the difficulty of the problem - we attempt to predict more than a million ratings based on a very incomplete dataset. 
+The provided dataset can be most naturally seen as an $N\times M$ matrix, with $N$ being the number of users ($N=~10000$), and $M$ the number of films ($M=1000$). If every user had rated every film, the matrix would have $10^7$ entries. However, in this realistic scenario, this is not the case and our matrix is quite sparse. From here stems the difficulty of the problem - we attempt to predict more than a million ratings based on a representative subset. 
 
 There are two main views which yield different methods for tackling this problem.
 
@@ -93,7 +92,7 @@ We investigated three algorithms which concentrate on solving the latent-factor 
 r_{ij}= \lambda \textnormal{AvgUser}[i] + (1 - \lambda) \textnormal{AvgFilm}[j]
 \label{eq:imputation}
 \end{equation}
-where $\lambda \in [0,1]$, $\textnormal{AvgUser}[i]$ and $\textnormal{AvgFilm}[j]$ are the average ratings of user $i$ and movie $j$ respectively. Imputation in general introduces noise and leads to sup-optimal results [needs some refs here]. We hope to minimize the noise and over-fitting by looking for a low-rank ($k$) approximation of the rating matrix. 
+where $\lambda \in [0,1]$, $\textnormal{AvgUser}[i]$ and $\textnormal{AvgFilm}[j]$ are the average ratings of user $i$ and movie $j$ respectively. Imputation in general introduces noise and leads to sup-optimal results \cite{Koren09matrixfactorization}. We hope to minimize the noise and over-fitting by looking for a low-rank ($k$) approximation of the rating matrix. 
 
 We experimented with different values for $\lambda$ and numbers of latent features. We concluded that the lowest RMSE on a probe set was accomplished using 13 features and $\lambda = 0.25$
 
@@ -163,7 +162,7 @@ for $k=1,\dots, 5$. This yields a probability distribution over the possible rat
 
 We make use of the built-in BernoulliRBM algorithm in the \textit{sklearn} Python library to create our RBM and train it. Furthermore, we modified the source code to add an heuristic for the learning rate of the RBM, which improved its performance.
 
-\subsubsection*{\textbf{User-based $k$-Nearest Neighbors}} User based neighborhood methods are considered one of the most intuitive methods for collaborative filtering. It consists of two steps. First, the algorithm computes the similarity between different users through some similarity measure. Second, to predict the rating of user $u$ for a particular movie $m$, the ratings of the most similar $k$ users who have rated movie $m$ are aggregated according to their similarity measure with user $u$ to estimate the required rating. The similarity measure, which according to \cite{L10} was found to be the most accurate was the Pearson correlation measure. We denote the Pearson correlation between two users $u_1$ and $u_2$ by $w(u_1, u_2)$ and it is calculated as follows:
+\subsubsection*{\textbf{User-based $k$-Nearest Neighbors}} User based neighbourhood methods are considered one of the most intuitive methods for collaborative filtering. It consists of two steps. First, the algorithm computes the similarity between different users through some similarity measure. Second, to predict the rating of user $u$ for a particular movie $m$, the ratings of the most similar $k$ users who have rated movie $m$ are aggregated according to their similarity measure with user $u$ to estimate the required rating. The similarity measure, which according to \cite{L10} was found to be the most accurate was the Pearson correlation measure. We denote the Pearson correlation between two users $u_1$ and $u_2$ by $w(u_1, u_2)$ and it is calculated as follows:
 \begin{equation} \label{eqn:pearson}
 \frac{\sum_{j \in C} (R(u_1, j) - \overline{R}_C(u_1))\cdot(R(u_2, j) - \overline{R}_C(u_2))}{\sqrt{\sum_{j \in C} (R(u_1, j) - \overline{R}_C(u_1))^2} \sqrt{\sum_{j \in C} (R(u_2, j) - \overline{R}_C(u_2))^2}}
 \end{equation}
