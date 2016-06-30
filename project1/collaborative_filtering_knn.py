@@ -137,7 +137,7 @@ def do_prediction(best_k):
 def do_validation(validationSubset):
 
     best_error = 10
-    best_k = 40
+    best_k = 100
 
     if False:
         save_for_validation = []
@@ -167,10 +167,16 @@ def do_validation(validationSubset):
     print best_k
 
     feature_vector_for_regression = []
-
+    
+    error = 0
+    
     for (u, m, rating) in validationSubset:
         predicted_rating = predict_rating(u, m, best_k)
+        error += pow((predicted_rating - rating), 2)
         feature_vector_for_regression.append([predicted_rating, rating])
+
+    error /= np.shape(validationSubset)[0]
+    print np.sqrt(error)
 
     np.save('data/knn/feature_vector_knn', feature_vector_for_regression)
 
