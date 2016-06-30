@@ -98,9 +98,9 @@ def do_prediction(best_k):
 
 def do_validation(validationSubset):
     best_error = 10
-    best_k = 20
+    best_k = 50
 
-    if True :
+    if False :
         save_for_validation = []
         save_k = []
         for k in range(10, 100, 10):
