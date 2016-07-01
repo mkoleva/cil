@@ -213,7 +213,7 @@
 	
 	\begin{figure}[htbp]
 		\centering
-		\includegraphics[scale=0.35]{convergence_zoom_all.png}
+		\includegraphics[scale=0.32]{convergence_zoom_all.png}
 		\caption{Zoomed-in version of Figure \ref{fig:sgd-conv}. Dashed graphs show results for algorithm with bold driver heuristic. Those converge much faster than the original algorithm at the cost of a 0.0004 error increase.}
 		\label{fig:sgd-conv-zoom}
 	\end{figure} 
@@ -238,8 +238,7 @@
 	
 	\subsection{Comparison between baseline and optimal algorithms}
 	In this section we report the RMSE error achieved on our local validation set, the public test set on Kaggle for each of the individual algorithms, and the blended result of the different algorithms.
-	
-	\begin{center}
+	\begin{table}
 		\begin{tabular}{ |p{2.8cm}||p{2.4cm}|p{2.3cm}|  }
 			\hline
 			Algorithm & RMSE (validation) & RMSE (Kaggle Public Testset) \\ [0.5ex] 
@@ -256,9 +255,11 @@
 			kNN-user (k=100) & 1.00876 & 1.00569 \\ [1ex] 
 			\hline
 		\end{tabular}
-	\end{center}
+	\label{tab:res}
+	\caption{Results for individual algorithms on local validation set(5\% from the training data) and on Kaggle. }
+	\end{table}
 	
-	We included all algorithms mentioned in the table when doing linear regression, along with some more variations. For example, we included RBM results obtained with 50 and 100 hidden states. We also included SGD results for $c = 100$. Performing linear regression on all predictions achieved a 10 fold cross validation error of 0.9420984 (Error achieved on each of the folds [0.9782558, 0.9193776, 0.94058739, 0.93060165, 0.9327, 0.98069694, 0.93532443, 0.91192913, 0.95785112, 0.93366013]). When submitting these predictions, we achieved a score of 0.96928, which outperforms each of the individual algorithms.
+	We included all algorithms mentioned in the table when doing linear regression, along with some more variations. For example, we included RBM results obtained with 50 and 100 hidden states. We also included SGD results for $c = 100$. Performing linear regression on all predictions achieved a 10 fold cross validation error of $0.9420984\pm{0.22}$. When submitting these predictions, we achieved a score of 0.96928, which outperforms each of the individual algorithms.
 	
 	\section{Conclusions}
 	\label{sec:conclusions}
