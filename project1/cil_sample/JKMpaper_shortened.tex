@@ -34,16 +34,7 @@
 	\maketitle
 	
 	\begin{abstract}
-		A critical part of scientific discovery is the
-		communication of research findings to peers or the general public.
-		Mastery of the process of scientific communication improves the
-		visibility and impact of research. While this guide is a necessary
-		tool for learning how to write in a manner suitable for publication
-		at a scientific venue, it is by no means sufficient, on its own, to
-		make its reader an accomplished writer. We also describe the rules
-		for submission in the computational intelligence laboratory.
-		This guide should be a
-		starting point for further development of writing skills.
+		Collaborative filtering consists of making predictions about some unknown preferences of a user based on  available data from a set of users. There exist several philosophies for tackling this problem, and algorithms from each different philosophy pick up distinct properties from the data. In this paper, we study whether we can obtain better predictions by combining results from algorithms based on two different approaches: latent-factor and neighborhood-based models. We also study the effect of adding a learning rate heuristic to some algorithms.
 	\end{abstract}
 	
 	\section{Introduction}
@@ -272,7 +263,7 @@
 	\section{Conclusions}
 	\label{sec:conclusions}
 	
-	The first aim of our experiments was to investigate whether we could achieve better overall accuracy by combining different algorithms which are known to perform well on the collaborative filtering problem. The intuition behind this is that different approaches to collaborative filtering capture distinct of the data, and so they can ``help" each other. The fact that the linear regression of predictions computed by our latent-factor and neighborhood-based algorithms outperforms all individual predictions confirms the validity of our idea.
+	The first aim of our experiments was to investigate whether we could achieve better overall accuracy by combining different algorithms which are known to perform well on the collaborative filtering problem. The intuition behind this is that different approaches to collaborative filtering capture distinct properties of the data, and so they can ``help" each other. The fact that the linear regression of predictions computed by our latent-factor and neighborhood-based algorithms outperforms all individual predictions confirms the validity of our idea.
 	
 	Our second contribution was investigating the bold driver heuristic. From the results of Section~\ref{sec:results}, we can easily see the positive impact of this heuristic. For SGD, adding the heuristic leads to a significant increase in convergence speed for all values of $c$ considered, especially when $c=80$ or 100 (convergence speed doubles), with very small associated error increase. The impact of the bold driver heuristic on RBM is even greater. Setups with the bold driver heuristic see their error continue to decrease for 50 or more additional epochs, achieving an improvement of 0.01 compared to the original algorithm. The difference between the behavior of the bold driver heuristic in SGD and RBM can be due to differences between the objective functions of both algorithms. It may be the case that the objective function of RBM is resistant to fixed learning rate methods, but is also well-behaved enough to be easily maneuvered by a slightly more complex method, like the bold driver.
 	
