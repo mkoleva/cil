@@ -106,11 +106,11 @@
 	
 	\begin{equation}
 	\begin{split}
-	\min_{p,q,b_u,b_m} \sum_{(i,j) \in T} &(r_{ij} - (\mu + b_u(i) + b_m(j) + p_i^T \cdot q_j))^2 \\ &+ \lambda(\lVert p_i \rVert^2 + \lVert q_j \rVert^2 + b_u(i)^2 + b_m(j)^2).
+	\min_{p,q,b_u,b_m} \sum_{(i,j) \in T} &(r_{ij} - (b_u(i) + b_m(j) + p_i^T \cdot q_j))^2 \\ &+ \lambda(\lVert p_i \rVert^2 + \lVert q_j \rVert^2 + b_u(i)^2 + b_m(j)^2).
 	\end{split}
 	\end{equation}
 	
-	$T$ is the set of observed ratings (pairs $(i,j)$ of user $i$ rating movie $j$), $r_{ij}$ is the known rating of user $i$ to movie $j$, and $b_u$ and $b_m$ are the bias vectors of users and movies respectively. It has been pointed out in \cite{Koren09matrixfactorization} that the bias vectors lead to higher accuracy. Intuitively, these biases help us as some user tend to consistently rate higher than others. In order to predict an unknown rating of user $i$ to movie $j$ we compute $r_{pred} = \mu + b_u(i) + b_m(j) + p_i^T\cdot q_j$.
+	$T$ is the set of observed ratings (pairs $(i,j)$ of user $i$ rating movie $j$), $r_{ij}$ is the known rating of user $i$ to movie $j$, and $b_u$ and $b_m$ are the bias vectors of users and movies respectively. It has been pointed out in \cite{Koren09matrixfactorization} that the bias vectors lead to higher accuracy. Intuitively, these biases help us as some user tend to consistently rate higher than others. In order to predict an unknown rating of user $i$ to movie $j$ we compute $r_{pred} = b_u(i) + b_m(j) + p_i^T\cdot q_j$.
 	The parameters are modified during the algorithm by looping through all ratings in the training set for several epochs. The learning rules are
 	\begin{equation}
 	\begin{split}
