@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015) (preloaded format=pdflatex 2015.11.27)  1 JUL 2016 04:06
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015) (preloaded format=pdflatex 2015.11.27)  1 JUL 2016 14:28
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -511,12 +511,12 @@ LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <14> not available
 
 ]
 [2]
-Overfull \hbox (17.36317pt too wide) detected at line 170
+Overfull \hbox (17.36317pt too wide) detected at line 161
 []\OML/cmm/m/it/10 ;
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 175--178
+Underfull \hbox (badness 10000) in paragraph at lines 166--169
 
  []
 
@@ -524,28 +524,28 @@ Underfull \hbox (badness 10000) in paragraph at lines 175--178
 File: convergence_speed_all.png Graphic file (type png)
 
 <use convergence_speed_all.png>
-Package pdftex.def Info: convergence_speed_all.png used on input line 218.
-(pdftex.def)             Requested size: 198.38268pt x 144.39658pt.
+Package pdftex.def Info: convergence_speed_all.png used on input line 209.
+(pdftex.def)             Requested size: 231.44814pt x 168.4639pt.
 
 <convergence_zoom_all.png, id=23, 661.2705pt x 481.3182pt>
 File: convergence_zoom_all.png Graphic file (type png)
 
 <use convergence_zoom_all.png>
-Package pdftex.def Info: convergence_zoom_all.png used on input line 225.
-(pdftex.def)             Requested size: 198.38268pt x 144.39658pt.
+Package pdftex.def Info: convergence_zoom_all.png used on input line 216.
+(pdftex.def)             Requested size: 231.44814pt x 168.4639pt.
 
 <conv_rbm_all.png, id=24, 751.608pt x 529.0164pt>
 File: conv_rbm_all.png Graphic file (type png)
  <use conv_rbm_all.png>
-Package pdftex.def Info: conv_rbm_all.png used on input line 243.
-(pdftex.def)             Requested size: 187.90154pt x 132.25377pt.
+Package pdftex.def Info: conv_rbm_all.png used on input line 234.
+(pdftex.def)             Requested size: 225.48413pt x 158.70615pt.
 
-Underfull \hbox (badness 10000) in paragraph at lines 254--254
+Underfull \hbox (badness 10000) in paragraph at lines 245--245
 []\OT1/ptm/m/n/10 RMSE
  []
 
 
-Overfull \hbox (7.4844pt too wide) in paragraph at lines 252--268
+Overfull \hbox (7.4844pt too wide) in paragraph at lines 243--259
  [] 
  []
 
@@ -597,7 +597,7 @@ b></usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb
 /texlive/2015/texmf-dist/fonts/type1/urw/times/utmbi8a.pfb></usr/local/texlive/
 2015/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/local/texlive/2015/texmf
 -dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on JKMpaper_shortened.pdf (5 pages, 315231 bytes).
+Output written on JKMpaper_shortened.pdf (5 pages, 314883 bytes).
 PDF statistics:
  80 PDF objects out of 1000 (max. 8388607)
  53 compressed objects within 1 object stream
