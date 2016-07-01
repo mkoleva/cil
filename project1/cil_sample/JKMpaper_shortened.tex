@@ -162,7 +162,7 @@
 	\end{equation}
 	for $k=1,\dots, 5$. This yields a probability distribution over the possible ratings for movie $i$. Our prediction is the expected value of this distribution, $\sum_{k=1}^{5}k\cdot p(v^k_i=1|\hat{p})$.
 	
-	We make use of the built-in BernoulliRBM algorithm in the \emph{sklearn} Python library to create our RBM and train it. Furthermore, we modified the source code to add an heuristic for the learning rate of the RBM, which improved its performance.
+	We make use of the built-in BernoulliRBM algorithm in the \emph{sklearn} Python library to create our RBM and train it. Furthermore, we modified the source code to add a heuristic for the learning rate of the RBM, which improved its performance.
 	
 	\subsubsection*{\textbf{User-based $k$-Nearest Neighbors}} User based neighbourhood algorithms consist of two steps. First, the algorithm computes the similarity between different users through some similarity measure. Second, to predict the rating of user $u$ for a particular movie $m$, the ratings of the most similar $k$ users who have rated movie $m$ are aggregated to estimate the required rating. The similarity measure, which according to \cite{L10} was found to be the most accurate, was the Pearson correlation measure. We denote the Pearson correlation between two users $u_1$ and $u_2$ by $w(u_1, u_2)$ and it is calculated as follows:
 	\begin{equation} \label{eqn:pearson}
