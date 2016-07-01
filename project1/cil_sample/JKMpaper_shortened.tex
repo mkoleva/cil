@@ -237,7 +237,7 @@
 	\end{figure} 
 	
 	\subsection{Comparison between baseline and optimal algorithms}
-	In this section we report the RMSE error achieved on our local validation set, the public test set on Kaggle for each of the individual algorithms, and the blended result of the different algorithms.
+	In Table \ref{tab:res} we report the RMSE error achieved on our local validation set, the public test set on Kaggle for each individual algorithm.
 	\begin{table}
 		\begin{tabular}{ |p{2.8cm}||p{2.4cm}|p{2.3cm}|  }
 			\hline
@@ -259,7 +259,7 @@
 		\label{tab:res}
 	\end{table}
 	
-	We included all algorithms mentioned in Table \ref{tab:res} when doing linear regression, along with some more variations. For example, we included RBM results obtained with 50 and 100 hidden states. We also included SGD results for $c = 100$. Performing linear regression on all predictions achieved a 10 fold cross validation error of $0.9420984\pm{0.22}$. When submitting these predictions, we achieved a score of 0.96928, which outperforms each of the individual algorithms.
+	To achieve the optimal setup we combine all algorithms mentioned in Table \ref{tab:res} with linear regression, along with some more variations. For example, we included RBM results obtained with 50 and 100 hidden states. We also included SGD results for $c = 100$. By performing linear regression on all predictions we obtained a 10 fold CV error of $0.9421\pm{0.22}$. When submitting these predictions, we achieved a score of 0.96928, which outperforms each of the individual algorithms.
 	
 	\section{Conclusions}
 	\label{sec:conclusions}
