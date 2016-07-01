@@ -34,7 +34,7 @@
 	\maketitle
 	
 	\begin{abstract}
-		Collaborative filtering consists of making predictions about some unknown preferences of a user based on  available data from a set of users. There exist several philosophies for tackling this problem, and algorithms from each different philosophy pick up distinct properties from the data. In this paper, we study whether we can obtain better predictions by combining results from algorithms based on two different approaches: latent-factor and neighborhood-based models. We also study the effect of adding a learning rate heuristic to some algorithms.
+		Collaborative filtering consists of making predictions about some unknown preferences of a given user based on available data from a set of users. There exist several philosophies for tackling this problem, each concentrating on different properties of the data. In this paper, we demonstrate we can obtain better predictions by combining results from algorithms based on two different approaches: latent-factor (SVD, RBM, SGD for SVD) and neighbourhood-based models (user- and item-based). We further improve the result by adding a Bold Driver learning rate heuristic to RBM and SGD to achieve an RMSE of 0.96928 on the Kaggle public dataset.
 	\end{abstract}
 	
 	\section{Introduction}
@@ -43,7 +43,7 @@
 	
 	In this paper, we concentrate on the collaborative filtering approach to recommender systems, which relies on previous user experiences (ratings), rather than predefined user profiles. Our problem and data are largely based on the Netflix challenge \cite{SMH07}, \cite{Koren09matrixfactorization}, \cite{funk2011netflix}.
 	
-	Our main contributions are two-fold. We first combine latent factor models and neighbourhood models to produce a robust recommender system which optimizes the Root Mean Squared Error (RMSE) of 1176953 predicted ratings from \textbf{Base score} to \textbf{Best score without BD}. Secondly, we show that the addition of a more complex learning rate heuristic on two latent factor models improves the score significantly, to \textbf{best score}. 
+	Our main contributions are two-fold. We first combine latent factor models and neighbourhood models to produce a robust recommender system which optimizes the Root Mean Squared Error (RMSE) of 1176953 predicted ratings from  0.99885 to 0.97606 on Kaggle (locally $0.9548\pm0.2$). Secondly, we show that the addition of a more complex learning rate heuristic on two latent factor models improves the Kaggle score significantly, to 0.96928 ($0.9420984\pm{0.22}$ in local 10-fold CV). When submitting these predictions, we achieved a score of . 
 	
 	In Section \ref{sec:models} we describe the idea and the implementation of our systems. We present the results from the local evaluation of the models and from the validation set on Kaggle in Section \ref{sec:results}. Finally, in Section \ref{sec:conclusions} we draw conclusions from the analysis of the various methods and reported results.
 	
@@ -113,11 +113,11 @@
 	\end{equation}
 	The algorithm was very sensitive to hyper-parameters, so those were optimized on both a local validation set and the online Kaggle score.
 	
-	\subsubsection*{\textbf{Restricted Boltzmann Machines (RBM's)}}
+	\subsubsection*{\textbf{Restricted Boltzmann Machines (RBMs)}}
 	
-	RBM's are neural networks consisting of a layer of visible units and a layer of hidden units. Each unit has a stochastic binary random variable associated with it. There may be undirected connections between hidden and visible units, but no hidden-hidden or visible-visible connections are allowed. These networks are a restricted version of Boltzmann machines (hence the name), introduced in \cite{AHS85}.
+	RBMs are neural networks consisting of a layer of visible units and a layer of hidden units. Each unit has a stochastic binary random variable associated with it. There may be undirected connections between hidden and visible units, but no hidden-hidden or visible-visible connections are allowed. These networks are a restricted version of Boltzmann machines (hence the name), introduced in \cite{AHS85}.
 	
-	Recently, RBM's have found applications in collaborative filtering, as illustrated in \cite{SMH07}. A very nice overview of RBM's for collaborative filtering can be found in \cite{L10}. Our approach is based on these two works, although there are some differences.
+	Recently, RBMs have found applications in collaborative filtering, as illustrated in \cite{SMH07}. A very nice overview of RBMs for collaborative filtering can be found in \cite{L10}. Our approach is based on these two works, although there are some differences.
 	
 	We first build an RBM with 5000 visible units $v^k_i$, for $k\in\{1,\dots,5\}$ and $i\in\{1,\dots,1000\}$, and $L$ hidden units $h_1,\dots, h_L$, where $L$ is a hyper-parameter of the algorithm. Furthermore, for each hidden unit $h_j$ we add connections to every visible unit $v^k_i$. Each connection between $h_j$ and $v^k_i$ has an associated weight $W^k_{ij}$. Each hidden unit $h_j$ has an associated bias $b_j$ and each visible unit $v^k_i$ has an associated bias $b^k_i$. Finally, each unit can be in state 0 or 1.
 	
@@ -178,7 +178,7 @@
 	\subsection{The bold driver heuristic} 
 	A significant improvement to the running time and efficiency of our algorithm came from incorporating the bold driver heuristic for the learning rate in both SGD and RBM. This technique works as follows: Suppose we start with learning rate $\lambda$. After each epoch we compute the current error on the validation set and compare it with the error of the previous epoch. If the error increased from one epoch to the other, we decrease $\lambda$ to $d\lambda$, where $d\in[0,1]$. On the other hand, if the error decreased, we increase $\lambda$ to $(1+c)\lambda$, where $c\geq 0$. Intuitively, the bold driver heuristic adapts the learning rate to the surface we are trying to maneuver. The values $c$ and $d$ are hyper-parameters.
 	
-	\section{Results}
+	\section{Results and Discussion}
 	\label{sec:results}
 	In this section we report the most interesting results achieved during our experiments, particularly for the SGD and RBM algorithms. Our goal was to understand how the different hyper-parameters affect the prediction accuracy, and what the best combination of algorithms is. We describe the validation protocol and results. In Section \ref{sec:conclusions} we derive conclusions.
 	\subsection{Parameter optimization and validation} 
@@ -255,11 +255,11 @@
 			kNN-user (k=100) & 1.00876 & 1.00569 \\ [1ex] 
 			\hline
 		\end{tabular}
-	\label{tab:res}
 	\caption{Results for individual algorithms on local validation set(5\% from the training data) and on Kaggle. }
+		\label{tab:res}
 	\end{table}
 	
-	We included all algorithms mentioned in the table when doing linear regression, along with some more variations. For example, we included RBM results obtained with 50 and 100 hidden states. We also included SGD results for $c = 100$. Performing linear regression on all predictions achieved a 10 fold cross validation error of $0.9420984\pm{0.22}$. When submitting these predictions, we achieved a score of 0.96928, which outperforms each of the individual algorithms.
+	We included all algorithms mentioned in Table \ref{tab:res} when doing linear regression, along with some more variations. For example, we included RBM results obtained with 50 and 100 hidden states. We also included SGD results for $c = 100$. Performing linear regression on all predictions achieved a 10 fold cross validation error of $0.9420984\pm{0.22}$. When submitting these predictions, we achieved a score of 0.96928, which outperforms each of the individual algorithms.
 	
 	\section{Conclusions}
 	\label{sec:conclusions}
