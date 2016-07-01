@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015) (preloaded format=pdflatex 2015.11.27)  1 JUL 2016 14:28
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015) (preloaded format=pdflatex 2015.11.27)  1 JUL 2016 17:56
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -504,19 +504,19 @@ File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
 e
 ))
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <14> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 34.
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 37.
 
 [1{/usr/local/texlive/2015/texmf-var/fonts/map/pdftex/updmap/pdftex.map}
 
 
 ]
 [2]
-Overfull \hbox (17.36317pt too wide) detected at line 161
+Overfull \hbox (17.36317pt too wide) detected at line 164
 []\OML/cmm/m/it/10 ;
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 166--169
+Underfull \hbox (badness 10000) in paragraph at lines 169--172
 
  []
 
@@ -524,29 +524,29 @@ Underfull \hbox (badness 10000) in paragraph at lines 166--169
 File: convergence_speed_all.png Graphic file (type png)
 
 <use convergence_speed_all.png>
-Package pdftex.def Info: convergence_speed_all.png used on input line 209.
+Package pdftex.def Info: convergence_speed_all.png used on input line 212.
 (pdftex.def)             Requested size: 231.44814pt x 168.4639pt.
 
 <convergence_zoom_all.png, id=23, 661.2705pt x 481.3182pt>
 File: convergence_zoom_all.png Graphic file (type png)
 
 <use convergence_zoom_all.png>
-Package pdftex.def Info: convergence_zoom_all.png used on input line 216.
-(pdftex.def)             Requested size: 231.44814pt x 168.4639pt.
+Package pdftex.def Info: convergence_zoom_all.png used on input line 219.
+(pdftex.def)             Requested size: 198.38268pt x 144.39658pt.
 
 <conv_rbm_all.png, id=24, 751.608pt x 529.0164pt>
 File: conv_rbm_all.png Graphic file (type png)
  <use conv_rbm_all.png>
-Package pdftex.def Info: conv_rbm_all.png used on input line 234.
+Package pdftex.def Info: conv_rbm_all.png used on input line 237.
 (pdftex.def)             Requested size: 225.48413pt x 158.70615pt.
 
-Underfull \hbox (badness 10000) in paragraph at lines 245--245
-[]\OT1/ptm/m/n/10 RMSE
+Underfull \hbox (badness 10000) in paragraph at lines 247--247
+[]\OT1/ptm/m/n/8 RMSE (Kag-gle
  []
 
 
-Overfull \hbox (7.4844pt too wide) in paragraph at lines 243--259
- [] 
+Overfull \hbox (7.4844pt too wide) in paragraph at lines 245--261
+[][] 
  []
 
 [3] (./JKMpaper_shortened.bbl [4 <./convergence_speed_all.png> <./convergence_z
@@ -576,11 +576,11 @@ Before submitting the final camera ready copy, remember to:
 
 ] (./JKMpaper_shortened.aux) ) 
 Here is how much of TeX's memory you used:
- 10482 strings out of 493054
- 187861 string characters out of 6134759
- 224309 words of memory out of 5000000
- 13942 multiletter control sequences out of 15000+600000
- 39621 words of font info for 76 fonts, out of 8000000 for 9000
+ 10485 strings out of 493054
+ 187890 string characters out of 6134759
+ 224317 words of memory out of 5000000
+ 13945 multiletter control sequences out of 15000+600000
+ 40238 words of font info for 77 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  38i,16n,41p,10369b,317s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/local/texlive/2015/texmf-dist/fonts/enc/dvi
@@ -597,7 +597,7 @@ b></usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb
 /texlive/2015/texmf-dist/fonts/type1/urw/times/utmbi8a.pfb></usr/local/texlive/
 2015/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/local/texlive/2015/texmf
 -dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on JKMpaper_shortened.pdf (5 pages, 314883 bytes).
+Output written on JKMpaper_shortened.pdf (5 pages, 318083 bytes).
 PDF statistics:
  80 PDF objects out of 1000 (max. 8388607)
  53 compressed objects within 1 object stream
