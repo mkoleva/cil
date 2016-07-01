@@ -46,7 +46,7 @@
 	
 	In this paper, we concentrate on the collaborative filtering approach to recommender systems, which relies on previous user experiences (ratings), rather than predefined user profiles. Our problem and data are largely based on the Netflix challenge \cite{SMH07}, \cite{Koren09matrixfactorization}, \cite{funk2011netflix}.
 	
-	Our main contributions are two-fold. We first combine latent factor models and neighbourhood models to produce a robust recommender system which optimizes the Root Mean Squared Error (RMSE) of 1176953 predicted ratings from  0.99885 to 0.97606 on Kaggle (locally $0.9548\pm0.2$). Secondly, we show that the addition of a more complex learning rate heuristic on two latent factor models improves the Kaggle score significantly, to 0.96928 ($0.9420984\pm{0.22}$ in local 10-fold cross validation).
+	Our main contributions are two-fold. We first combine latent factor models and neighbourhood models to produce a robust recommender system which optimizes the Root Mean Squared Error (RMSE) of 1176953 predicted ratings from  0.99885 to 0.97606 on Kaggle (locally $0.9548\pm0.02$). Secondly, we show that the addition of a more complex learning rate heuristic on two latent factor models improves the Kaggle score significantly, to 0.96928 ($0.9420984\pm{0.022}$ in local 10-fold cross validation).
 	
 	In Section \ref{sec:models} we describe the idea and the implementation of our systems. We present the results from the local evaluation of the models and from the validation set on Kaggle in Section \ref{sec:results}. Finally, in Section \ref{sec:conclusions} we draw conclusions from the analysis of the various methods and reported results.
 	
