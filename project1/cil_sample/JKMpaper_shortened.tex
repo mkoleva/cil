@@ -176,7 +176,7 @@
 	where $N(u)$ is the set of the $k$ most similar users who rated item $i$.
 	\\
 	
-	\subsubsection*{\textbf{Item-based $k$-Nearest Neighbors}}  For this algorithm, we consider neighborhoods of movies, instead of users. Computing the neighborhood of a movie and the predictions can be done in an analogous fashion to user-based kNN. Again, we make use of the Pearson correlation measure. The size of the neighborhood of a movie is a hyper-parameter. In our experiments, we found that the best approach is to use all rated movies by a user -- usually between 70 and 250.
+	\subsubsection*{\textbf{Item-based $k$-Nearest Neighbors}}  For this algorithm, we consider neighborhoods of movies, instead of users. Computing the neighborhood of a movie and the predictions can be done in an analogous fashion to user-based kNN. Again, we make use of the Pearson correlation measure. The size of the neighborhood of a movie is a hyper-parameter that is optimally chosen using a local validation set.
 	
 %	The set of users who rated movies $i$ and $j$ are used to measure as two vectors and the correlation is measured between them in a similar fashion as shown in equation (\ref{eqn:pearson}). in order to predict the rating of user $u$ for movie $i$, This is computed as follows:
 %	\begin{equation}
