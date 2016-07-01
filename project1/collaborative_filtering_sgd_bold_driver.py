@@ -128,14 +128,14 @@ def do_prediction(nP, nQ, B_user, B_item, c_used_for_printing):
 def task1():
     global trainingSubset, validationSubset
 
-    P, Q, B_user, B_item = matrix_factorisation(trainingSubset, validationSubset, c=80, epochs=98,inc=0.05,dec=0.7)
+    P, Q, B_user, B_item = matrix_factorisation(trainingSubset, validationSubset, c=80, epochs=98,inc=0.05,dec=0.75)
     do_validation(validationSubset, P, Q, B_user, B_item,80)
     do_prediction(P,Q.T, B_user, B_item,80)
 
 def task2():
     global trainingSubset, validationSubset
 
-    P, Q, B_user, B_item = matrix_factorisation(trainingSubset, validationSubset, c=100, epochs=105,inc=0.05,dec=0.7)
+    P, Q, B_user, B_item = matrix_factorisation(trainingSubset, validationSubset, c=100, epochs=105,inc=0.05,dec=0.75)
     do_validation(validationSubset, P, Q, B_user, B_item,100)
     do_prediction(P,Q.T, B_user, B_item,100)
 
